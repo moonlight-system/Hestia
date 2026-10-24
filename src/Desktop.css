@@ -1,0 +1,49 @@
+.desktop_container{
+    background-color: var(--base-bg-color);
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.nav_menu{
+    width: 10vw;
+    min-width: 15rem;
+    background-color: var(--darker-bg-color);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 5rem;
+}
+
+.App_title{
+    background-color: var(--darker-bg-color);
+    height: 8rem;
+    color: var(--main-accent-color);
+    text-align: center;
+    line-height: 8rem;
+    font-size: 3rem;
+    letter-spacing: 10%;
+}
+
+.nav_menu_item{
+    letter-spacing: 15%;
+    background-color: inherit;
+    height: 5rem;
+    text-align: left;
+    padding-left: 3rem;
+}
+
+.nav_menu_item:hover{
+    background-color: var(--darkest-bg-color);
+    transition: 0.3s;
+}
+
+.nav_menu_bottom {
+    margin-top: auto;
+}
+
+.desktop_page{
+    background-color: var(--base-bg-color);
+    width: 100%;
+    height: 100%;
+}
