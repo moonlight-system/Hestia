@@ -29,3 +29,5 @@ notif.txt
 keystore.properties
 ~/
 .tauri/
+
+.env

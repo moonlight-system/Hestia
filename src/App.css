@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  color: var(--text-color);
+  background-color: var(--base-bg-color);
+  font-family: var(--app-font, Inter, Avenir, Helvetica, Arial, sans-serif);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,11 +13,11 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --darkest-bg-color: #131212;
+  --darkest-bg-color: var(--on-accent-color);
   --darker-bg-color: #201e1e;
   --base-bg-color: #312e2e;
 
-  --main-accent-color: #eba000;
+  --main-accent-color: #eb0047;
 }
 
 html, body, #root {
@@ -72,7 +72,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  color: #0f0f0f;
+  color: var(--text-color);
   transition: border-color 0.25s;
 }
 
@@ -91,28 +91,11 @@ button {
   margin-right: 5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
 
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
-}
 
 .AppContainer {
   height: 100%;
-  background-color: var(--primary-bg-color);
+  background-color: var(--base-bg-color);
   padding:
     max(env(safe-area-inset-top), var(--inset-top, 0px))
     max(env(safe-area-inset-right), var(--inset-right, 0px))

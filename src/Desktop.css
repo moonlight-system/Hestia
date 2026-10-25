@@ -8,7 +8,7 @@
 .nav_menu{
     width: 10vw;
     min-width: 15rem;
-    background-color: var(--darker-bg-color);
+    background-color: var(--darkest-bg-color);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -16,9 +16,9 @@
 }
 
 .App_title{
-    background-color: var(--darker-bg-color);
+    background-color: var(--darkest-bg-color);
     height: 8rem;
-    color: var(--main-accent-color);
+    color: var(--title-accent-color);
     text-align: center;
     line-height: 8rem;
     font-size: 3rem;
@@ -46,4 +46,9 @@
     background-color: var(--base-bg-color);
     width: 100%;
     height: 100%;
+}
+
+.nav_menu_item.active{
+    background-color: var(--darker-bg-color);
+    color: var(--main-accent-color);
 }

@@ -2,6 +2,7 @@
 export type Person = {
     id: string;
     name: string;
+    color?: string;
 }
 
 export type Task = {
@@ -16,6 +17,7 @@ export type Event = {
     start: Date;
     end?: Date;
     person?: Person[];
+    color?: string;
 }
 
 export type Answer = {
