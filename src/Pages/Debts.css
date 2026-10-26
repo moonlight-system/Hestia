@@ -1,0 +1,113 @@
+.debts_container{
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+    color: var(--text-color);
+}
+
+/* One centred column normally; wider when the simplified list appears */
+.debts_wrap{
+    width: 100%;
+    max-width: 44rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+.debts_wrap.split{
+    max-width: 80rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* Not enough room for two columns: stack them */
+@media (max-width: 1000px){
+    .debts_wrap.split{ grid-template-columns: 1fr; }
+}
+
+.debts_head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.7rem;      /* same in both columns, so the lists start level */
+}
+
+.debts_title{ margin: 0; color: var(--title-accent-color); }
+.debts_new{
+    background-color: var(--add-bg-color);
+    color: var(--add-text-color);
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.5rem;
+}
+
+.debts_col{ display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+.debts_hint{ color: var(--muted-color); font-size: 0.85rem; }
+.debts_empty{ color: var(--muted-color); }
+
+/* ---------- cards ---------- */
+.debt_card{
+    position: relative;
+    background-color: var(--darker-bg-color);
+    border-radius: 0.6rem;
+    padding: 0.9rem 3.2rem 0.9rem 1.2rem;   /* room for the checkbox on the right */
+    text-align: left;
+}
+.debt_names{
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+.debt_owes{ color: var(--muted-color); font-weight: 400; font-size: 0.9rem; }
+.debt_amount{
+    margin-top: 0.2rem;
+    font-size: 1.5rem;
+    color: var(--secondary-accent-color);
+    overflow-wrap: anywhere;
+}
+.debt_desc{
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--muted-color);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.debt_box{
+    position: absolute;
+    right: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+}
+.debt_box input{
+    width: 1.3rem;
+    height: 1.3rem;
+    margin: 0;
+    accent-color: var(--main-accent-color);
+    cursor: pointer;
+}
+.debt_box input:disabled{ cursor: default; opacity: 0.5; }
+
+.debt_card.paid{ opacity: 0.5; }
+.debt_card.paid .debt_amount{ text-decoration: line-through; }
+
+.debt_history_toggle{
+    align-self: flex-start;
+    background: none;
+    color: var(--muted-color);
+    padding: 0.3rem 0;
+}
+
+/* ---------- form extras ---------- */
+.debt_pair_row{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+.debt_pair_row select{ flex: 1; min-width: 0; }

@@ -5,7 +5,7 @@ type Props = {
     y: number;
     onClose: () => void;
     onEdit: () => void;
-    onRename: () => void;
+    onRename?: () => void;
     onDelete: () => void;
 };
 
@@ -31,7 +31,9 @@ function ContextMenu({ x, y, onClose, onEdit, onRename, onDelete }: Props){
         >
             <div className="ctx_menu" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
                 <button onClick={() => { onEdit(); onClose(); }}>Edit…</button>
-                <button onClick={() => { onRename(); onClose(); }}>Rename</button>
+                {onRename && (
+                    <button onClick={() => { onRename(); onClose(); }}>Rename</button>
+                )}
                 {confirming ? (
                     <button className="danger" onClick={() => { onDelete(); onClose(); }}>
                         Click again to delete

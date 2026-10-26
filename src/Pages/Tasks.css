@@ -1,0 +1,129 @@
+.tasks_container{
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    color: var(--text-color);
+}
+.tasks_toolbar{
+    width: 100%;
+    max-width: 50rem;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.tasks_title{ margin: 0; color: var(--title-accent-color); }
+.tasks_new{
+    background-color: var(--add-bg-color);
+    color: var(--add-text-color);
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.5rem;
+}
+
+.tasks_list{
+    width: 100%;
+    max-width: 50rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.tasks_empty{ color: var(--muted-color); }
+
+.task_card{
+    background-color: var(--darker-bg-color);
+    border-radius: 0.6rem;
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.task_main{ min-width: 0; }
+.task_name{ font-size: 1.05rem; overflow-wrap: anywhere; }
+.task_meta{ color: var(--muted-color); font-size: 0.85rem; }
+.task_overdue{ color: var(--danger-color); }
+
+.task_boxes{ display: flex; gap: 0.9rem; flex: none; }
+.task_box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.75rem;
+    color: var(--muted-color);
+}
+.task_box input{
+    width: 1.3rem;
+    height: 1.3rem;
+    margin: 0;
+    accent-color: var(--main-accent-color);
+    cursor: pointer;
+}
+.task_box input:disabled{ cursor: default; opacity: 0.5; }
+
+/* Completed one-time tasks */
+.task_card.finished{ opacity: 0.5; }
+.task_card.finished .task_name{ text-decoration: line-through; }
+
+.task_history_toggle{
+    align-self: flex-start;
+    background: none;
+    color: var(--muted-color);
+    padding: 0.3rem 0;
+}
+
+/* ---------- extras for the task form (it reuses the event form's look) ---------- */
+.cal_modal input[type="checkbox"]{
+    padding: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--main-accent-color);
+}
+.cal_modal label.task_check{
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+.cal_modal select{
+    background-color: var(--darker-bg-color);
+    color: var(--text-color);
+    padding: 0.7rem 0.9rem;
+    border: 0;
+    outline: none;
+    border-radius: 0.5rem;
+    font: inherit;
+}
+.task_repeat_row{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+.cal_modal .task_repeat_row input{ width: 4.5rem; }
+.task_hint{ color: var(--muted-color); font-size: 0.8rem; }
+
+.task_desc{
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    white-space: pre-wrap;      /* keeps the line breaks people type */
+    overflow-wrap: anywhere;
+}
+
+.cal_modal textarea{
+    background-color: var(--darker-bg-color);
+    color: var(--text-color);
+    padding: 0.7rem 0.9rem;
+    border: 0;
+    outline: none;
+    border-radius: 0.5rem;
+    font: inherit;
+    resize: vertical;
+}
