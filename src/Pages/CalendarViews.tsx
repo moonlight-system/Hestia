@@ -1,6 +1,6 @@
 import type { Event } from "../Types";
 import {
-    addDays, eventsOnDay, monthGrid, rangeLabel, sameDay, startOfWeek, timeLabel,
+    addDays, eventsOnDay, monthGrid, rangeLabel, sameDay, startOfDay, startOfWeek, timeLabel,
 } from "../calendarUtils";
 import type { CSSProperties } from "react";
 
@@ -131,6 +131,87 @@ function MonthView({ date, events, onAdd, onOpenDay, onEventClick, onEventContex
     )
 }
 
+const DEFAULT_MIN = 60;      // events with no end time are drawn this long
+const MIN_BLOCK_MIN = 30;    // very short events are stretched so they stay readable
+const HOURS = Array.from({ length: 24 }, (_, h) => h);
+
+
+type Placed = { ev: Event; startMin: number; endMin: number; col: number; cols: number };
+
+// Works out where each event of one day goes: minutes from midnight, plus a
+// column index so overlapping events sit side by side instead of on top of each other
+function layoutDay(events: Event[], day: Date): Placed[] {
+    const dayStart = startOfDay(day).getTime();
+    const dayEnd = addDays(startOfDay(day), 1).getTime();
+
+    const items: Placed[] = eventsOnDay(events, day)
+        .map((ev) => {
+            // Multi-day events are clipped to the part that falls on this day
+            const s = Math.max(ev.start.getTime(), dayStart);
+            const hasEnd = ev.end && ev.end > ev.start;
+            const e = hasEnd ? Math.min(ev.end!.getTime(), dayEnd) : s + DEFAULT_MIN * 60_000;
+            const startMin = (s - dayStart) / 60_000;
+            const endMin = Math.min(1440, Math.max((e - dayStart) / 60_000, startMin + MIN_BLOCK_MIN));
+            return { ev, startMin, endMin, col: 0, cols: 1 };
+        })
+        .sort((a, b) => a.startMin - b.startMin || b.endMin - a.endMin);
+
+    // A "cluster" is a run of events that overlap each other (directly or through
+    // a chain). All events in a cluster share the same number of columns.
+    let cluster: Placed[] = [];
+    let clusterEnd = 0;
+    const closeCluster = () => {
+        const n = Math.max(...cluster.map((i) => i.col)) + 1;
+        cluster.forEach((i) => { i.cols = n; });
+        cluster = [];
+    };
+
+    for (const it of items) {
+        if (cluster.length && it.startMin >= clusterEnd) closeCluster();
+        // Take the first column not used by an event that's still running
+        const taken = cluster.filter((c) => c.endMin > it.startMin).map((c) => c.col);
+        let col = 0;
+        while (taken.includes(col)) col++;
+        it.col = col;
+        cluster.push(it);
+        clusterEnd = Math.max(clusterEnd, it.endMin);
+    }
+    if (cluster.length) closeCluster();
+
+    return items;
+}
+
+function TimedEvent({ p, onClick, onContext }: {
+    p: Placed;
+    onClick: (ev: Event) => void;
+    onContext: (ev: Event, x: number, y: number) => void;
+}){
+    const { ev } = p;
+    const style = {
+        top: `${(p.startMin / 1440) * 100}%`,
+        height: `${((p.endMin - p.startMin) / 1440) * 100}%`,
+        left: `${(p.col / p.cols) * 100}%`,
+        width: `${100 / p.cols}%`,
+        ...(ev.color ? { "--chip-color": ev.color } : {}),
+    } as CSSProperties;
+
+    return(
+        <div
+            className="cal_block"
+            style={style}
+            title={tooltip(ev)}
+            onClick={(e) => { e.stopPropagation(); onClick(ev); }}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onContext(ev, e.clientX, e.clientY);
+            }}
+        >
+            <span className="cal_block_time">{timeLabel(ev.start)}</span> {ev.name}
+        </div>
+    )
+}
+
 function WeekView({ date, events, onAdd, onOpenDay, onEventClick, onEventContext }: ViewProps){
     const today = new Date();
     const start = startOfWeek(date);
@@ -138,37 +219,50 @@ function WeekView({ date, events, onAdd, onOpenDay, onEventClick, onEventContext
 
     return(
         <div className="cal_week">
-            {days.map((day) => {
-                const list = eventsOnDay(events, day);
-                return(
+            <div className="cal_week_header">
+                <div className="cal_week_gutter" />
+                {days.map((day) => (
                     <div
                         key={day.toISOString()}
-                        className={"cal_week_col" + (sameDay(day, today) ? " today" : "")}
+                        className={"cal_week_head" + (sameDay(day, today) ? " today" : "")}
                     >
-                        <div className="cal_week_head">
-                            <button className="cal_week_day" onClick={() => onOpenDay(day)}>
-                                <span>{day.toLocaleDateString([], { weekday: "short" })}</span>
-                                <strong>{day.getDate()}</strong>
-                            </button>
-                            <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
-                                +
-                            </button>
-                        </div>
-                        <div className="cal_week_events">
-                            {list.map((ev) => (
-                                <EventChip
-                                    key={ev.id}
-                                    ev={ev}
-                                    showTime
+                        <button className="cal_week_day" onClick={() => onOpenDay(day)}>
+                            <span>{day.toLocaleDateString([], { weekday: "short" })}</span>
+                            <strong>{day.getDate()}</strong>
+                        </button>
+                        <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
+                            +
+                        </button>
+                    </div>
+                ))}
+            </div>
+
+            <div className="cal_week_scroll">
+                <div className="cal_week_body">
+                    <div className="cal_week_gutter cal_hours">
+                        {HOURS.map((h) => (
+                            <div key={h} className="cal_hour_label">
+                                {h === 0 ? "" : `${String(h).padStart(2, "0")}:00`}
+                            </div>
+                        ))}
+                    </div>
+                    {days.map((day) => (
+                        <div
+                            key={day.toISOString()}
+                            className={"cal_week_col" + (sameDay(day, today) ? " today" : "")}
+                        >
+                            {layoutDay(events, day).map((p) => (
+                                <TimedEvent
+                                    key={p.ev.id}
+                                    p={p}
                                     onClick={onEventClick}
                                     onContext={onEventContext}
                                 />
                             ))}
-                            {list.length === 0 && <div className="cal_none">—</div>}
                         </div>
-                    </div>
-                )
-            })}
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }

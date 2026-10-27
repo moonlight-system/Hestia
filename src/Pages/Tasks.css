@@ -49,14 +49,21 @@
 .task_meta{ color: var(--muted-color); font-size: 0.85rem; }
 .task_overdue{ color: var(--danger-color); }
 
-.task_boxes{ display: flex; gap: 0.9rem; flex: none; }
+.task_boxes{ display: flex; gap: 0.2rem; flex: none; }
 .task_box{
+    width: 4.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
     font-size: 0.75rem;
     color: var(--muted-color);
+}
+.task_box span{
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .task_box input{
     width: 1.3rem;

@@ -52,7 +52,7 @@
     background: none;
     padding: 0;
     margin-bottom: 0.4rem;
-    color: var(--main-accent-color);
+    color: var(--accent-text-color);
     text-transform: capitalize;
 }
 .cal_mini_grid{
@@ -162,23 +162,7 @@
 }
 
 /* ---------- week ---------- */
-.cal_week{
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 2px;
-    min-height: 100%;
-    background-color: var(--cell-border-color);
-}
-.cal_week_col{
-    background-color: var(--cell-bg-color);
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    min-width: 0;
-}
-.cal_week_col.today{ outline: 2px solid var(--today-color); outline-offset: -2px; }
-.cal_week_head{ display: flex; justify-content: space-between; align-items: center; }
+
 .cal_week_day{
     background: none;
     color: var(--text-color);
@@ -190,8 +174,83 @@
     text-transform: capitalize;
 }
 .cal_week_day strong{ font-size: 1.3rem; }
-.cal_week_events{ display: flex; flex-direction: column; gap: 3px; }
-.cal_none{ color: var(--muted-color); }
+
+.cal_week{
+    --gutter: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* day names row: stays put while the hours scroll */
+.cal_week_header{
+    display: grid;
+    grid-template-columns: var(--gutter) repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    background-color: var(--cell-border-color);
+    padding-bottom: 2px;
+}
+.cal_week_head{
+    background-color: var(--cell-bg-color);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 0;
+}
+.cal_week_head.today{ outline: 2px solid var(--today-color); outline-offset: -2px; }
+
+/* scrolling hour grid */
+/* hour grid: fills the leftover height, no scrolling */
+.cal_week_scroll{ flex: 1; min-height: 0; }
+.cal_week_body{
+    height: 100%;
+    display: grid;
+    grid-template-columns: var(--gutter) repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    background-color: var(--cell-border-color);
+}
+.cal_week_gutter{ background-color: var(--base-bg-color); }
+.cal_hours{ display: flex; flex-direction: column; }
+.cal_hour_label{
+    flex: 1;                      /* 24 labels share the height equally */
+    min-height: 0;
+    padding-right: 0.4rem;
+    text-align: right;
+    font-size: 0.7rem;
+    line-height: 1;
+    color: var(--muted-color);
+    transform: translateY(-0.5em);   /* centre the label on its hour line */
+}
+.cal_week_col{
+    position: relative;
+    background-color: var(--cell-bg-color);
+    /* one thin line at the top of every hour: 1/24 of the column height */
+    background-image: linear-gradient(var(--cell-border-color) 1px, transparent 1px);
+    background-size: 100% calc(100% / 24);
+    min-width: 0;
+}
+.cal_week_col.today{ outline: 2px solid var(--today-color); outline-offset: -2px; }
+
+/* an event, placed by its start time and sized by its length */
+.cal_block{
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0.1rem 0.35rem;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--chip-color, var(--main-accent-color)) 30%, var(--cell-bg-color));
+    border-left: 0.3rem solid var(--chip-color, var(--main-accent-color));
+    border-radius: 0.25rem;
+    outline: 1px solid var(--cell-bg-color);   /* thin gap between neighbours */
+    font-size: 0.72rem;
+    line-height: 1rem;
+    cursor: pointer;
+}
+.cal_block:hover{
+    background-color: color-mix(in srgb, var(--chip-color, var(--main-accent-color)) 45%, var(--cell-bg-color));
+}
+.cal_block_time{ color: var(--secondary-accent-color); font-size: 0.7rem; }
+
 
 /* ---------- day ---------- */
 .cal_day{ max-width: 40rem; display: flex; flex-direction: column; gap: 0.8rem; }
@@ -314,4 +373,4 @@
 }
 /* Month pages never scroll; week pages scroll vertically if a day has many events */
 .pager.y .pager_pane{ overflow: hidden; }
-.pager.x .pager_pane{ overflow-x: hidden; overflow-y: auto; }
+.pager.x .pager_pane{ overflow: hidden; }

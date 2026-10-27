@@ -33,9 +33,7 @@ export type Event = {
 }
 
 export type Answer = {
-    id: string;
-    author: Person;
-    value: boolean;
+    vote?: boolean;
     text?: string;
 }
 
@@ -43,7 +41,10 @@ export type Ask = {
     id: string;
     author: Person;
     content: string;
-    answers: Answer[];
+    vote: boolean;            // this ask collects ✓/✗
+    text: boolean;            // this ask collects a text answer (both = both required)
+    answers: Record<string, Answer>;   // keyed by roommate id, missing key = empty slot
+    createdAt: Date;
 }
 
 export type Debt = {
@@ -56,5 +57,13 @@ export type Debt = {
     description?: string;
     paid: boolean;
     paidAt?: Date;
+    createdAt: Date;
+};
+
+export type Rule = {
+    id: string;
+    name: string;
+    description?: string;
+    agreed: string[];         // ids of the roommates who agreed to follow it
     createdAt: Date;
 };

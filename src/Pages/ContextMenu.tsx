@@ -4,7 +4,7 @@ type Props = {
     x: number;
     y: number;
     onClose: () => void;
-    onEdit: () => void;
+    onEdit?: () => void;
     onRename?: () => void;
     onDelete: () => void;
 };
@@ -30,7 +30,9 @@ function ContextMenu({ x, y, onClose, onEdit, onRename, onDelete }: Props){
             onContextMenu={(e) => { e.preventDefault(); onClose(); }}
         >
             <div className="ctx_menu" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => { onEdit(); onClose(); }}>Edit…</button>
+                {onEdit && (
+                    <button onClick={() => { onEdit(); onClose(); }}>Edit…</button>
+                )}
                 {onRename && (
                     <button onClick={() => { onRename(); onClose(); }}>Rename</button>
                 )}

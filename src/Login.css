@@ -16,7 +16,7 @@
 }
 
 .login_title{
-    color: var(--main-accent-color);
+    color: var(--title-accent-color);
     text-align: center;
     font-size: 3rem;
     margin-bottom: 1rem;

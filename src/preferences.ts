@@ -43,7 +43,6 @@ export function applyPrefs(p: Prefs) {
     for (const [name, value] of Object.entries(theme.colors)) {
         root.style.setProperty(name, value);
     }
-    root.style.setProperty("--danger-color", theme.dark ? "var(--danger-color)" : "#c92a2a");
     // Tells the browser to draw native things (date pickers, scrollbars) dark or light
     root.style.colorScheme = theme.dark ? "dark" : "light";
 

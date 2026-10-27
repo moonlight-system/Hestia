@@ -67,7 +67,7 @@
     font-family: monospace;
     font-size: 1.8rem;
     letter-spacing: 0.3rem;
-    color: var(--main-accent-color);
+    color: var(--accent-text-color);
 }
 
 .member_row{ display: flex; align-items: center; gap: 0.6rem; }
