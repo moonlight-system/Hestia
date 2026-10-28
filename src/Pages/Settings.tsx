@@ -3,8 +3,10 @@ import { useState } from "react";
 import { SettingsHousehold } from "./SettingsHousehold";
 import { SettingsCustomization } from "./SettingsCustomization";
 import { SettingsAccount } from "./SettingsAccount";
+import { SettingsNotifications } from "./SettingsNotifications";
 
-const TABS = ["Household", "Customization", "Account"] as const;
+
+const TABS = ["Household", "Customization", "Notifications", "Account"] as const;
 type Tab = typeof TABS[number];
 
 function Settings(){
@@ -29,6 +31,7 @@ function Settings(){
             <div className="settings_section">
                 {tab === "Household" && <SettingsHousehold />}
                 {tab === "Customization" && <SettingsCustomization />}
+                {tab === "Notifications" && <SettingsNotifications />}
                 {tab === "Account" && <SettingsAccount />}
             </div>
         </div>

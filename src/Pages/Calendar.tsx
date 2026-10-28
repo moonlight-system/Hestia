@@ -115,7 +115,13 @@ function Calendar(){
         setModal({
             mode,
             id: ev.id,
-            initial: { name: ev.name, start: ev.start, end: ev.end, person: ev.person ?? [] },
+            initial: {
+                name: ev.name,
+                start: ev.origStart ?? ev.start,
+                end: ev.origEnd ?? ev.end,
+                person: ev.person ?? [],
+                repeat: ev.repeat,
+            },
         });
     }
 
@@ -133,6 +139,8 @@ function Calendar(){
                 // deleteField removes a previously set end date
                 end: data.end ? Timestamp.fromDate(data.end) : deleteField(),
                 person: data.person,
+                repeat: data.repeat ?? deleteField(),
+                repeats: data.repeat ? true : deleteField(),
             });
         } else {
             await addDoc(col, {
@@ -141,6 +149,7 @@ function Calendar(){
                 person: data.person,
                 // Firestore rejects `undefined`, so only include end when set
                 ...(data.end ? { end: Timestamp.fromDate(data.end) } : {}),
+                ...(data.repeat ? { repeat: data.repeat, repeats: true } : {}),
             });
         }
         setModal(null);

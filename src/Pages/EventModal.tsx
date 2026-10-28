@@ -1,8 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
-import type { Person } from "../Types";
+import type { EventRepeat, EventUnit, Person } from "../Types";
 import { toInputValue } from "../calendarUtils";
 
-export type EventData = { name: string; start: Date; end?: Date; person: Person[] };
+export type EventData = { name: string; start: Date; end?: Date; person: Person[]; repeat?: EventRepeat };
 export type ModalMode = "create" | "edit" | "rename";
 
 type Props = {
@@ -24,6 +24,15 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
     const [start, setStart] = useState(toInputValue(initial.start));
     const [end, setEnd] = useState(initial.end ? toInputValue(initial.end) : "");
     const [selected, setSelected] = useState<string[]>(initial.person.map((p) => p.id));
+    const r = initial.repeat;
+    const [kind, setKind] = useState<"none" | "interval" | "monthday">(
+        !r ? "none" : "monthDay" in r ? "monthday" : "interval",
+    );
+    const [every, setEvery] = useState(String(r && "every" in r ? r.every : 1));
+    const [unit, setUnit] = useState<EventUnit>(r && "unit" in r ? r.unit : "weeks");
+    const [monthDay, setMonthDay] = useState(
+        String(r && "monthDay" in r ? r.monthDay : initial.start.getDate()),
+    );
     const [error, setError] = useState("");
     const [busy, setBusy] = useState(false);
 
@@ -46,6 +55,18 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
             setError("The end can't be before the start.");
             return;
         }
+        const n = Math.floor(Number(every));
+        const day = Math.floor(Number(monthDay));
+        if (mode !== "rename") {
+            if (kind === "interval" && !(n >= 1)) {
+                setError("The repeat interval must be at least 1.");
+                return;
+            }
+            if (kind === "monthday" && !(day >= 1 && day <= 31)) {
+                setError("Pick a day of the month between 1 and 31.");
+                return;
+            }
+        }
         setBusy(true);
         try {
             await onSave({
@@ -55,6 +76,9 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                 person: members
                     .filter((m) => selected.includes(m.id))
                     .map(({ id, name }) => ({ id, name })),
+                repeat: kind === "interval" ? { every: n, unit }
+                    : kind === "monthday" ? { monthDay: day }
+                    : undefined,
             });
             // On success the parent closes this modal
         } catch (err) {

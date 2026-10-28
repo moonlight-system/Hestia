@@ -1,45 +1,68 @@
-import { useEffect, useState } from "react";
-import { collection, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
+import {
+    collection, onSnapshot, orderBy, query, Timestamp, where,
+    type DocumentData, type QueryDocumentSnapshot,
+} from "firebase/firestore";
 import { db } from "./firebase";
 import { useHouseholdId } from "./HouseholdContext";
-import { addDays } from "./calendarUtils";
+import { addDays, expandEvent } from "./calendarUtils";
 import type { Event } from "./Types";
 
-// Loads one calendar year at a time (plus a margin for weeks that spill over
-// into the neighbouring years). Navigating within a year costs no extra reads;
-// moving to another year re-queries.
+function toEvent(d: QueryDocumentSnapshot<DocumentData>): Event {
+    const data = d.data();
+    return {
+        id: d.id,
+        name: data.name,
+        start: data.start.toDate(),
+        end: data.end ? data.end.toDate() : undefined,
+        person: data.person ?? [],
+        repeat: data.repeat,
+    } as Event;
+}
+
+// One calendar year plus a margin for weeks that spill into the neighbouring years
+function rangeFor(year: number): [Date, Date] {
+    return [addDays(new Date(year, 0, 1), -45), addDays(new Date(year + 1, 0, 1), 45)];
+}
+
+// Loads one calendar year of one-off events, plus ALL repeating events (they can
+// have started years ago), which are expanded into occurrences for that year.
 export function useEvents(year: number): Event[] {
     const hid = useHouseholdId();
-    const [events, setEvents] = useState<Event[]>([]);
+    const [single, setSingle] = useState<Event[]>([]);
+    const [repeating, setRepeating] = useState<Event[]>([]);
 
     useEffect(() => {
-        const from = addDays(new Date(year, 0, 1), -45);
-        const to = addDays(new Date(year + 1, 0, 1), 45);
-
+        const [from, to] = rangeFor(year);
         const q = query(
             collection(db, "households", hid, "events"),
             where("start", ">=", Timestamp.fromDate(from)),
             where("start", "<", Timestamp.fromDate(to)),
             orderBy("start"),
         );
-
         return onSnapshot(
             q,
-            (snap) => {
-                setEvents(snap.docs.map((d) => {
-                    const data = d.data();
-                    return {
-                        id: d.id,
-                        name: data.name,
-                        start: data.start.toDate(),
-                        end: data.end ? data.end.toDate() : undefined,
-                        person: data.person ?? [],
-                    } as Event;
-                }));
-            },
+            // Repeating events are handled by the other listener
+            (snap) => setSingle(snap.docs.map(toEvent).filter((e) => !e.repeat)),
             (err) => console.error("Events listener failed:", err),
         );
     }, [hid, year]);
 
-    return events;
+    useEffect(() => {
+        const q = query(
+            collection(db, "households", hid, "events"),
+            where("repeats", "==", true),
+        );
+        return onSnapshot(
+            q,
+            (snap) => setRepeating(snap.docs.map(toEvent)),
+            (err) => console.error("Repeating events listener failed:", err),
+        );
+    }, [hid]);
+
+    return useMemo(() => {
+        const [from, to] = rangeFor(year);
+        return [...single, ...repeating.flatMap((ev) => expandEvent(ev, from, to))]
+            .sort((a, b) => a.start.getTime() - b.start.getTime());
+    }, [single, repeating, year]);
 }

@@ -17,11 +17,15 @@ export type Task = {
     participants: Person[];   // mode "each"
     repeat?: Repeat;          // absent = one-time task
     date?: Date;              // due date (first due date if repeating)
+    time?: string;
     cycle: number;            // which repetition we're on, 0 = the first
     done: string[];           // ids of the people who ticked it this cycle
     completedAt?: Date;       // one-time tasks only, for the history
     createdAt: Date;
 };
+
+export type EventUnit = "days" | "weeks" | "months" | "years";
+export type EventRepeat = { every: number; unit: EventUnit } | { monthDay: number };
 
 export type Event = {
     id: string;

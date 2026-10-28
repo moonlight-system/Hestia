@@ -135,3 +135,23 @@
 
 /* Year / Month / Week / Day buttons: bigger touch targets */
 [data-platform="mobile"] .cal_view_btn{ padding: 0.7rem 0.75rem; font-size: 0.95rem; }
+
+/* ---------- "new update available" banner ---------- */
+.mobile_update{
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-accent-color);
+    color: var(--on-accent-color);
+    font-size: 0.9rem;
+}
+.mobile_update button{
+    background-color: var(--on-accent-color);
+    color: var(--main-accent-color);
+    padding: 0.4rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+}

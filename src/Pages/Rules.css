@@ -81,10 +81,26 @@
     color: var(--muted-color);
 }
 .rule_box input{
+    appearance: none;
+    -webkit-appearance: none;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
     width: 1.3rem;
     height: 1.3rem;
     margin: 0;
-    accent-color: var(--main-accent-color);
+    border-radius: 0.25rem;
+    border: 2px solid var(--box-color);
+    background-color: var(--base-bg-color);
     cursor: pointer;
 }
-.rule_box input:disabled{ cursor: default; opacity: 0.5; }
+.rule_box input:checked{ background-color: var(--box-color); }
+.rule_box input:checked::after{
+    content: "";
+    width: 0.3rem;
+    height: 0.62rem;
+    border: solid #ffffff;
+    border-width: 0 0.17rem 0.17rem 0;
+    transform: translateY(-0.06rem) rotate(45deg);
+}
+.rule_box input:disabled{ cursor: default; }

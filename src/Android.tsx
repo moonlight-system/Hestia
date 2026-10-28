@@ -6,11 +6,16 @@ import { Asks } from "./Pages/Asks"
 import { Debts } from "./Pages/Debts"
 import { Rules } from "./Pages/Rules"
 import { Settings } from "./Pages/Settings"
+import { useTaskReminders } from "./useTaskReminders"
+import { openUrl } from "@tauri-apps/plugin-opener"
+import { useAndroidUpdate } from "./useAndroidUpdate"
 
 const TABS = ["Calendar", "Tasks", "Asks", "Debts", "Rules"] as const;
 type Page = typeof TABS[number] | "Settings";
 
 function Android(){
+    useTaskReminders();
+    const update = useAndroidUpdate();
     const [page, setPage] = useState<Page>("Calendar");
 
     return(
@@ -24,6 +29,13 @@ function Android(){
                     ⚙
                 </button>
             </div>
+
+            {update && (
+                <div className="mobile_update">
+                    <span>New update available ({update.version})</span>
+                    <button onClick={() => openUrl(update.url).catch(console.error)}>Update</button>
+                </div>
+            )}
 
             <div className="mobile_page">
                 {page === "Calendar" && <Calendar />}

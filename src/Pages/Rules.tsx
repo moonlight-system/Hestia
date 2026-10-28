@@ -1,5 +1,5 @@
 import "./Rules.css";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import {
     addDoc, arrayRemove, arrayUnion, collection, deleteDoc, deleteField,
     doc, Timestamp, updateDoc, writeBatch,
@@ -11,6 +11,7 @@ import { useRules } from "../useRules";
 import { RuleModal, type RuleData, type RuleModalMode } from "./RuleModal";
 import { ContextMenu } from "./ContextMenu";
 import type { Person, Rule } from "../Types";
+
 
 type ModalState = { mode: RuleModalMode; id?: string; initial: RuleData };
 type MenuState = { x: number; y: number; rule: Rule };
@@ -39,7 +40,11 @@ function RuleCard({ rule, members, me, onToggle, onContext }: CardProps){
 
             <div className="rule_boxes">
                 {members.map((m) => (
-                    <label key={m.id} className="rule_box">
+                    <label
+                        key={m.id}
+                        className="rule_box"
+                        style={{ "--box-color": m.color ?? "var(--main-accent-color)" } as CSSProperties}
+                    >
                         <input
                             type="checkbox"
                             checked={rule.agreed.includes(m.id)}

@@ -54,9 +54,10 @@ function TaskCard({ task, members, me, today, onToggle, onContext }: CardProps){
         : [{ id: me, checked: task.done.length > 0, enabled: true }];
 
     const parts: { text: string; bad?: boolean }[] = [];
-    if (next) parts.push({ text: `Next ${fmt(next)}` });
+    const at = task.time ? ` ${task.time}` : "";
+    if (next) parts.push({ text: `Next ${fmt(next)}${at}` });
     else if (due) parts.push({
-        text: overdue ? `Overdue since ${fmt(due)}` : `Due ${fmt(due)}`,
+        text: overdue ? `Overdue since ${fmt(due)}${at}` : `Due ${fmt(due)}${at}`,
         bad: overdue,
     });
     if (task.repeat) parts.push({ text: repeatLabel(task.repeat) });
@@ -141,6 +142,7 @@ function Tasks(){
                 participants: task.participants,
                 repeat: task.repeat,
                 date: task.date,
+                time: task.time,
                 description: task.description,
             },
         });
@@ -164,6 +166,7 @@ function Tasks(){
             participants: data.mode === "each" ? data.participants : undefined,
             repeat: data.repeat,
             date: data.date ? Timestamp.fromDate(data.date) : undefined,
+            time: data.time,
             description: data.description,
         };
         for (const [key, value] of Object.entries(optional)) {

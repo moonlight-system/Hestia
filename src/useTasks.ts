@@ -35,6 +35,7 @@ export function useTasks(): { tasks: Task[]; today: Date } {
                         participants: data.participants ?? [],
                         repeat: data.repeat,
                         date: data.date ? data.date.toDate() : undefined,
+                        time: data.time,
                         cycle: data.cycle ?? 0,
                         done: data.done ?? [],
                         completedAt: data.completedAt ? data.completedAt.toDate() : undefined,

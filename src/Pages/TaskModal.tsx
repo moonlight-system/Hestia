@@ -9,6 +9,7 @@ export type TaskData = {
     participants: Person[];
     repeat?: Repeat;
     date?: Date;
+    time?: string;
     description?: string;
 };
 export type TaskModalMode = "create" | "edit" | "rename";
@@ -42,6 +43,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
     const [every, setEvery] = useState(String(initial.repeat?.every ?? 1));
     const [unit, setUnit] = useState<Repeat["unit"]>(initial.repeat?.unit ?? "weeks");
     const [date, setDate] = useState(initial.date ? toDateInput(initial.date) : "");
+    const [time, setTime] = useState(initial.time ?? "");
     const [error, setError] = useState("");
     const [busy, setBusy] = useState(false);
     const [description, setDescription] = useState(initial.description ?? "");
@@ -81,6 +83,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                     : [],
                 repeat: repeats ? { every: n, unit } : undefined,
                 date: date ? new Date(`${date}T00:00`) : undefined,
+                time: date && time ? time : undefined,
                 description: description.trim() || undefined,
             });
             // On success the parent closes this modal
@@ -181,6 +184,17 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                                 onChange={(e) => setDate(e.target.value)}
                             />
                         </label>
+
+                        {date && (
+                            <label>
+                                Due time (optional)
+                                <input
+                                    type="time"
+                                    value={time}
+                                    onChange={(e) => setTime(e.target.value)}
+                                />
+                            </label>
+                        )}
 
                         <label>
                             Description (optional)

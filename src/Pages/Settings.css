@@ -99,3 +99,12 @@
     outline-offset: -1px;
 }
 .theme_preview span{ width: 1.4rem; }
+
+.settings_check{ display: flex; align-items: center; gap: 0.6rem; cursor: pointer; }
+.settings_check input{
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0;
+    flex: none;
+    accent-color: var(--main-accent-color);
+}

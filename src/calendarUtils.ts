@@ -71,3 +71,56 @@ export function toInputValue(d: Date): string {
     const p = (n: number) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
+
+// Keeps the day of d but takes the hours and minutes of ref
+function withTimeOf(d: Date, ref: Date): Date {
+    const x = new Date(d);
+    x.setHours(ref.getHours(), ref.getMinutes(), 0, 0);
+    return x;
+}
+
+// All occurrences of a repeating event that touch [from, to).
+// Non-repeating events come back unchanged. Always computed from the first
+// occurrence, so months never drift (Jan 31 -> Feb 28 -> Mar 31).
+export function expandEvent(ev: Event, from: Date, to: Date): Event[] {
+    const r = ev.repeat;
+    if (!r) return [ev];
+
+    const duration = ev.end ? ev.end.getTime() - ev.start.getTime() : undefined;
+    const out: Event[] = [];
+    const visible = (s: Date) => s < to && s.getTime() + (duration ?? 0) >= from.getTime();
+    const push = (start: Date) => out.push({
+        ...ev,
+        start,
+        end: duration !== undefined ? new Date(start.getTime() + duration) : undefined,
+        origStart: ev.start,
+        origEnd: ev.end,
+    });
+
+    if ("monthDay" in r) {
+        let y = ev.start.getFullYear();
+        let m = ev.start.getMonth();
+        for (let i = 0; i < 5000; i++, m++) {
+            const last = new Date(y, m + 1, 0).getDate();
+            const s = new Date(y, m, Math.min(r.monthDay, last), ev.start.getHours(), ev.start.getMinutes());
+            if (s >= to) break;
+            if (s >= startOfDay(ev.start) && visible(s)) push(s);
+        }
+    } else {
+        const n = Math.max(1, Math.floor(r.every));
+        const at = (k: number): Date => {
+            switch (r.unit) {
+                case "days": return addDays(ev.start, n * k);
+                case "weeks": return addDays(ev.start, 7 * n * k);
+                case "months": return withTimeOf(addMonths(ev.start, n * k), ev.start);
+                case "years": return withTimeOf(addMonths(ev.start, 12 * n * k), ev.start);
+            }
+        };
+        for (let k = 0; k < 20000; k++) {
+            const s = at(k);
+            if (s >= to) break;
+            if (visible(s)) push(s);
+        }
+    }
+    return out;
+}
