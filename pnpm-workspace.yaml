@@ -1,3 +1,5 @@
 allowBuilds:
   '@firebase/util': false
   protobufjs: false
+minimumReleaseAgeExclude:
+  - '@tauri-apps/plugin-notification@2.8.0'
