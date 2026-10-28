@@ -34,6 +34,10 @@ export type Event = {
     end?: Date;
     person?: Person[];
     color?: string;
+    repeat?: EventRepeat;
+    // Set on each displayed occurrence of a repeating event: the real start/end of the series
+    origStart?: Date;
+    origEnd?: Date;
 }
 
 export type Answer = {

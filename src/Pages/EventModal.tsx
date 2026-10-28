@@ -125,7 +125,64 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                                 onChange={(e) => setEnd(e.target.value)}
                             />
                         </label>
+                        <div className="cal_label">Repeat</div>
+                        <div className="cal_people">
+                            <button
+                                type="button"
+                                className={kind === "none" ? "chip active" : "chip"}
+                                onClick={() => setKind("none")}
+                            >Never</button>
+                            <button
+                                type="button"
+                                className={kind === "interval" ? "chip active" : "chip"}
+                                onClick={() => setKind("interval")}
+                            >Every…</button>
+                            <button
+                                type="button"
+                                className={kind === "monthday" ? "chip active" : "chip"}
+                                onClick={() => setKind("monthday")}
+                            >Day of month</button>
+                        </div>
 
+                        {kind === "interval" && (
+                            <div className="task_repeat_row">
+                                Every
+                                <input
+                                    type="number"
+                                    min={1}
+                                    value={every}
+                                    onChange={(e) => setEvery(e.target.value)}
+                                />
+                                <select value={unit} onChange={(e) => setUnit(e.target.value as EventUnit)}>
+                                    <option value="days">days</option>
+                                    <option value="weeks">weeks</option>
+                                    <option value="months">months</option>
+                                    <option value="years">years</option>
+                                </select>
+                            </div>
+                        )}
+
+                        {kind === "monthday" && (
+                            <>
+                                <div className="task_repeat_row">
+                                    On day
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={31}
+                                        value={monthDay}
+                                        onChange={(e) => setMonthDay(e.target.value)}
+                                    />
+                                    of every month
+                                </div>
+                                <div className="task_hint">
+                                    Starts at the first such day on or after the start date. Short months use their last day.
+                                </div>
+                            </>
+                        )}
+                        {kind !== "none" && (
+                            <div className="task_hint">Editing or deleting applies to the whole series.</div>
+                        )}
                         <div className="cal_label">Who's involved</div>
                         <div className="cal_people">
                             {members.map((m) => (
