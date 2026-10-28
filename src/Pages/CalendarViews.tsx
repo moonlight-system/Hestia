@@ -2,7 +2,9 @@ import type { Event } from "../Types";
 import {
     addDays, eventsOnDay, monthGrid, rangeLabel, sameDay, startOfDay, startOfWeek, timeLabel,
 } from "../calendarUtils";
-import type { CSSProperties } from "react";
+import { type CSSProperties } from "react";
+import { isAndroid } from "../platform";
+
 
 export type ViewProps = {
     date: Date;
@@ -101,21 +103,27 @@ function MonthView({ date, events, onAdd, onOpenDay, onEventClick, onEventContex
                         + (day.getMonth() !== date.getMonth() ? " other" : "")
                         + (sameDay(day, today) ? " today" : "");
                     return(
-                        <div key={day.toISOString()} className={cls}>
+                        <div
+                            key={day.toISOString()}
+                            className={cls}
+                            onClick={isAndroid ? () => onOpenDay(day) : undefined}
+                        >
                             <div className="cal_cell_head">
                                 <button className="cal_daynum" onClick={() => onOpenDay(day)}>
                                     {day.getDate()}
                                 </button>
-                                <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
-                                    +
-                                </button>
+                                {!isAndroid && (
+                                    <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
+                                        +
+                                    </button>
+                                )}
                             </div>
                             {list.slice(0, MAX).map((ev) => (
                                 <EventChip
                                     key={ev.id}
                                     ev={ev}
-                                    onClick={onEventClick}
-                                    onContext={onEventContext}
+                                    onClick={isAndroid ? () => onOpenDay(day) : onEventClick}
+                                    onContext={isAndroid ? () => {} : onEventContext}
                                 />
                             ))}
                             {list.length > MAX && (
@@ -212,7 +220,50 @@ function TimedEvent({ p, onClick, onContext }: {
     )
 }
 
-function WeekView({ date, events, onAdd, onOpenDay, onEventClick, onEventContext }: ViewProps){
+function WeekRows({ date, events, onOpenDay }: ViewProps){
+    const today = new Date();
+    const days = Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(date), i));
+
+    return(
+        <div className="cal_wr">
+            {days.map((day) => {
+                // Ordered by start time; eventsOnDay returns a fresh array, so sorting is safe
+                const list = eventsOnDay(events, day)
+                    .sort((a, b) => a.start.getTime() - b.start.getTime());
+                return(
+                    <div
+                        key={day.toISOString()}
+                        className={"cal_wr_row" + (sameDay(day, today) ? " today" : "")}
+                        onClick={() => onOpenDay(day)}
+                    >
+                        <div className="cal_wr_label">
+                            <span>{day.toLocaleDateString([], { weekday: "short" })}</span>
+                            <strong>{day.getDate()}</strong>
+                        </div>
+                        <div className="cal_wr_events">
+                            {list.map((ev) => (
+                                <div
+                                    key={ev.id}
+                                    className="cal_wr_event"
+                                    style={ev.color ? ({ "--chip-color": ev.color } as CSSProperties) : undefined}
+                                >
+                                    <span className="cal_wr_time">{timeLabel(ev.start)}</span> {ev.name}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+// Phones get the row layout, desktop keeps the columns
+function WeekView(props: ViewProps){
+    return isAndroid ? <WeekRows {...props} /> : <WeekColumns {...props} />;
+}
+
+function WeekColumns({ date, events, onAdd, onOpenDay, onEventClick, onEventContext }: ViewProps){
     const today = new Date();
     const start = startOfWeek(date);
     const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));

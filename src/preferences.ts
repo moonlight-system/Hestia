@@ -51,5 +51,9 @@ export function applyPrefs(p: Prefs) {
     else root.style.removeProperty("--app-font");
 
     const size = SIZES.find((s) => s.id === p.size) ?? SIZES[1];
-    root.style.fontSize = `${size.px}px`;
+    // Phones have a narrow viewport, so everything (all rem-based) is scaled down.
+    // Tweak MOBILE_SCALE to taste: smaller = more compact.
+    const MOBILE_SCALE = 0.8;
+    const scale = root.dataset.platform === "mobile" ? MOBILE_SCALE : 1;
+    root.style.fontSize = `${size.px * scale}px`;
 }

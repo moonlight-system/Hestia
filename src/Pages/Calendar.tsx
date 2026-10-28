@@ -13,6 +13,7 @@ import { YearView, MonthView, WeekView, DayView, type ViewProps } from "./Calend
 import { EventModal, type EventData, type ModalMode } from "./EventModal";
 import { ContextMenu } from "./ContextMenu";
 import type { Event } from "../Types";
+import { isAndroid } from "../platform";
 
 type View = "year" | "month" | "week" | "day";
 const VIEWS: View[] = ["year", "month", "week", "day"];
@@ -33,9 +34,9 @@ function titleFor(view: View, date: Date): string {
             return `${f(s)} – ${f(e)}, ${e.getFullYear()}`;
         }
         case "day":
-            return date.toLocaleDateString([], {
-                weekday: "long", day: "numeric", month: "long", year: "numeric",
-            });
+            return date.toLocaleDateString([], isAndroid
+                ? { weekday: "short", day: "numeric", month: "short", year: "numeric" }
+                : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     }
 }
 
@@ -60,6 +61,35 @@ function Calendar(){
     );
 
     const pagerRef = useRef<PagerHandle>(null);
+
+    // Swipe up = next, swipe down = previous (same as scrolling the wheel on desktop)
+    const touch = useRef<{ x: number; y: number; atTop: boolean; atBottom: boolean } | null>(null);
+
+    function onTouchStart(e: React.TouchEvent<HTMLDivElement>){
+        const el = e.currentTarget;
+        const t = e.touches[0];
+        touch.current = {
+            x: t.clientX,
+            y: t.clientY,
+            // Remember where the content was when the finger landed, so scrolling
+            // the year view down to its end doesn't also change the year
+            atTop: el.scrollTop <= 0,
+            atBottom: el.scrollTop + el.clientHeight >= el.scrollHeight - 1,
+        };
+    }
+
+    function onTouchEnd(e: React.TouchEvent<HTMLDivElement>){
+        const s = touch.current;
+        touch.current = null;
+        if (!s) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - s.x;
+        const dy = t.clientY - s.y;
+        // Must be long enough and mostly vertical
+        if (Math.abs(dy) < 60 || Math.abs(dy) < Math.abs(dx) * 1.5) return;
+        if (dy < 0 && s.atBottom) move(1);
+        else if (dy > 0 && s.atTop) move(-1);
+    }
 
     function move(n: number){
         // Month and week views slide; the others jump as before
@@ -139,7 +169,9 @@ function Calendar(){
                     <button onClick={() => move(1)}>›</button>
                 </div>
 
-                <h2 className="cal_title">{titleFor(view, date)}</h2>
+                <h2 className="cal_title" onClick={() => setDate(startOfDay(new Date()))}>
+                    {titleFor(view, date)}
+                </h2>
 
                 <div className="cal_views">
                     {VIEWS.map((v) => (
@@ -154,7 +186,12 @@ function Calendar(){
                 </div>
             </div>
 
-            <div className="cal_body">
+            <div
+                className="cal_body"
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+                onTouchCancel={() => { touch.current = null; }}
+            >
                 {view === "year" && <YearView {...viewProps} />}
                 {view === "month" && (
                     <PagedView
@@ -169,7 +206,7 @@ function Calendar(){
                 {view === "week" && (
                     <PagedView
                         ref={pagerRef}
-                        axis="x"
+                        axis={isAndroid ? "y" : "x"}
                         date={date}
                         step={(d, n) => addDays(d, 7 * n)}
                         onChange={setDate}
