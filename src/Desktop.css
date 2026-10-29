@@ -52,3 +52,38 @@
     background-color: var(--darker-bg-color);
     color: var(--accent-text-color);
 }
+
+/* ---------- "update available" banner, just above Settings ---------- */
+.nav_update{
+    margin-top: auto;            /* pushes the banner and the Settings button to the bottom */
+    padding: 0.8rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    background-color: var(--darker-bg-color);
+}
+/* the banner now takes the auto margin, so Settings sits right below it */
+.nav_update + .nav_menu_bottom{ margin-top: 0; }
+
+.nav_update_text{ font-size: 0.9rem; }
+
+.nav_update_btn{
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    color: #34c17b;
+    outline: 1px solid #34c17b;
+    outline-offset: -1px;
+}
+.nav_update_btn:hover:not(:disabled){ background-color: color-mix(in srgb, #34c17b 18%, transparent); }
+.nav_update_btn:disabled{ opacity: 0.6; cursor: default; }
+
+.nav_update_error{
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;     /* long error messages wrap instead of overflowing */
+}

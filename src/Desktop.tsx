@@ -6,10 +6,12 @@ import { Asks } from "./Pages/Asks"
 import { Debts } from "./Pages/Debts"
 import { Rules } from "./Pages/Rules"
 import { Settings } from "./Pages/Settings"
+import { Download } from "lucide-react"
+import { useDesktopUpdate } from "./useDesktopUpdate"
 
 
 function Desktop(){
-
+    const { update, busy, error, install } = useDesktopUpdate();
     const PAGES = ["Calendar", "Tasks", "Asks", "Debts", "Rules", "Settings"] as const;
     type Page = typeof PAGES[number];
     const [page, setPage] = useState<Page>("Calendar");
@@ -28,6 +30,19 @@ function Desktop(){
                         {p}
                     </button>
                 ))}
+                {update && (
+                    <div className="nav_update">
+                        <div className="nav_update_text">An update is available</div>
+                        {error ? (
+                            <div className="nav_update_error">Update failed: {error}</div>
+                        ) : (
+                            <button className="nav_update_btn" disabled={busy} onClick={install}>
+                                <Download size={16} />
+                                {busy ? "Updating…" : "Update"}
+                            </button>
+                        )}
+                    </div>
+                )}
                 <button
                     className={page === "Settings" ? "nav_menu_item nav_menu_bottom active" : "nav_menu_item nav_menu_bottom"}
                     onClick={() => setPage("Settings")}
