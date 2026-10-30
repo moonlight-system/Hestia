@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { THEME_PRESETS } from "../themes";
 import {
     FONTS, SIZES, applyPrefs, loadPrefs, savePrefs, type Prefs,
 } from "../preferences";
+import { EDITABLE_COLORS, THEME_PRESETS, resolveColor, withOverrides } from "../themes";
+import { ThemePicker } from "./ThemePicker";
+import { Dropdown } from "./Dropdown";
 
 function SettingsCustomization(){
     const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
@@ -15,46 +17,67 @@ function SettingsCustomization(){
     }
 
     const theme = THEME_PRESETS.find((t) => t.name === prefs.theme) ?? THEME_PRESETS[0];
-    const swatches = [
-        "--base-bg-color", "--darker-bg-color", "--darkest-bg-color",
-        "--main-accent-color", "--secondary-accent-color",
-    ];
+    const font = FONTS.find((f) => f.id === prefs.font) ?? FONTS[0];
+    const overrides = prefs.overrides[theme.name] ?? {};
+    const hasCustom = Object.keys(overrides).length > 0;
+    const shown = withOverrides(theme.colors, overrides);
+
+    function setColor(key: string, value: string){
+        update({ overrides: { ...prefs.overrides, [theme.name]: { ...overrides, [key]: value } } });
+    }
+
+    function resetColors(){
+        const next = { ...prefs.overrides };
+        delete next[theme.name];
+        update({ overrides: next });
+    }
 
     return(
         <>
             <div className="settings_card">
                 <h3>Theme</h3>
-                <div className="settings_row">
-                    <select
-                        className="settings_input"
-                        value={theme.name}
-                        onChange={(e) => update({ theme: e.target.value })}
-                    >
-                        {THEME_PRESETS.map((t) => (
-                            <option key={t.name} value={t.name}>
-                                {t.name}{t.dark ? "" : " (light)"}
-                            </option>
-                        ))}
-                    </select>
-                    <div className="theme_preview">
-                        {swatches.map((v) => (
-                            <span key={v} style={{ backgroundColor: theme.colors[v] }} />
-                        ))}
-                    </div>
+                <ThemePicker value={theme.name} onChange={(name) => update({ theme: name })} />
+                <div className="color_grid">
+                    {EDITABLE_COLORS.map((c) => (
+                        <label key={c.key} className="color_item">
+                            <input
+                                type="color"
+                                value={resolveColor(shown, c.key)}
+                                onChange={(e) => setColor(c.key, e.target.value)}
+                            />
+                            <span>{c.label}</span>
+                        </label>
+                    ))}
                 </div>
+                <div className="settings_hint">
+                    Click a colour to change it. Your changes are kept separately for each theme.
+                </div>
+                {hasCustom && (
+                    <button
+                        className="settings_btn"
+                        style={{ alignSelf: "flex-start" }}
+                        onClick={resetColors}
+                    >
+                        Reset this theme's colours
+                    </button>
+                )}
             </div>
 
             <div className="settings_card">
                 <h3>Font</h3>
-                <select
-                    className="settings_input"
-                    value={prefs.font}
-                    onChange={(e) => update({ font: e.target.value })}
-                >
-                    {FONTS.map((f) => <option key={f.id} value={f.id}>{f.label}</option>)}
-                </select>
+                <Dropdown
+                    value={font.id}
+                    options={FONTS.map((f) => ({
+                        id: f.id,
+                        label: f.label,
+                        // The default font has an empty stack, so it falls back to the app font
+                        style: f.stack ? { fontFamily: f.stack } : undefined,
+                    }))}
+                    onChange={(id) => update({ font: id })}
+                />
                 <div className="settings_hint">
-                    Only fonts installed on your device are used, so a font may look different on another device.
+                    Monospace, System, Humanist and Serif use fonts already on your device, so they can look
+                    different from one device to another. All the others are bundled with the app.
                 </div>
             </div>
 

@@ -2,7 +2,7 @@ import "./Calendar.css";
 import { useMemo, useRef, useState } from "react";
 import { PagedView, type PagerHandle } from "./PagedView";
 import {
-    addDoc, collection, deleteDoc, deleteField, doc, Timestamp, updateDoc,
+    addDoc, arrayRemove, arrayUnion, collection, deleteDoc, deleteField, doc, Timestamp, updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useHouseholdId } from "../HouseholdContext";
@@ -136,11 +136,13 @@ function Calendar(){
             await updateDoc(doc(col, modal.id), {
                 name,
                 start: Timestamp.fromDate(data.start),
-                // deleteField removes a previously set end date
                 end: data.end ? Timestamp.fromDate(data.end) : deleteField(),
                 person: data.person,
                 repeat: data.repeat ?? deleteField(),
                 repeats: data.repeat ? true : deleteField(),
+                // Moving the event invalidates its "done" ticks
+                ...(data.start.getTime() !== modal.initial.start.getTime()
+                    ? { doneAt: deleteField() } : {}),
             });
         } else {
             await addDoc(col, {
@@ -159,6 +161,19 @@ function Calendar(){
         await deleteDoc(doc(db, "households", hid, "events", ev.id));
     }
 
+    async function toggleDone(ev: Event){
+        // The key is the start of this occurrence, so a repeating event can be
+        // ticked on one day without ticking all the others.
+        const key = ev.start.getTime();
+        try {
+            await updateDoc(doc(db, "households", hid, "events", ev.id), {
+                doneAt: ev.done ? arrayRemove(key) : arrayUnion(key),
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     const viewProps: ViewProps = {
         date,
         events: coloredEvents,
@@ -167,6 +182,7 @@ function Calendar(){
         onOpenMonth: (day) => { setDate(startOfDay(day)); setView("month"); },
         onEventClick: (ev) => openEdit(ev),
         onEventContext: (ev, x, y) => setMenu({ x, y, ev }),
+        onToggleDone: toggleDone,
     };
 
     return(
@@ -242,6 +258,8 @@ function Calendar(){
                     onClose={() => setMenu(null)}
                     onEdit={() => openEdit(menu.ev)}
                     onRename={() => openEdit(menu.ev, "rename")}
+                    onToggle={() => toggleDone(menu.ev)}
+                    toggleLabel={menu.ev.done ? "Mark as not done" : "Mark as done"}
                     onDelete={() => remove(menu.ev)}
                 />
             )}

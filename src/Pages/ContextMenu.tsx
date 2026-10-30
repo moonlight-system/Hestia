@@ -6,10 +6,12 @@ type Props = {
     onClose: () => void;
     onEdit?: () => void;
     onRename?: () => void;
+    onToggle?: () => void;
+    toggleLabel?: string;
     onDelete: () => void;
 };
 
-function ContextMenu({ x, y, onClose, onEdit, onRename, onDelete }: Props){
+function ContextMenu({ x, y, onClose, onEdit, onRename, onToggle, toggleLabel, onDelete }: Props){
     const [confirming, setConfirming] = useState(false);
 
     useEffect(() => {
@@ -20,7 +22,7 @@ function ContextMenu({ x, y, onClose, onEdit, onRename, onDelete }: Props){
 
     // Keep the menu on screen near the window edges
     const left = Math.min(x, window.innerWidth - 190);
-    const top = Math.min(y, window.innerHeight - 140);
+    const top = Math.min(y, window.innerHeight - 190);
 
     return(
         // The invisible backdrop catches any click outside the menu and closes it
@@ -30,6 +32,9 @@ function ContextMenu({ x, y, onClose, onEdit, onRename, onDelete }: Props){
             onContextMenu={(e) => { e.preventDefault(); onClose(); }}
         >
             <div className="ctx_menu" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
+                {onToggle && (
+                    <button onClick={() => { onToggle(); onClose(); }}>{toggleLabel}</button>
+                )}
                 {onEdit && (
                     <button onClick={() => { onEdit(); onClose(); }}>Edit…</button>
                 )}

@@ -90,15 +90,84 @@
 }
 .swatch.selected{ border-color: var(--text-color); }
 
-.theme_preview{
+.color_grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.5rem 0.8rem;
+}
+.color_item{
     display: flex;
-    height: 2.4rem;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.color_item input[type="color"]{
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 0.4rem;
+    background: none;
+    cursor: pointer;
+    outline: 1px solid var(--muted-color);
+    outline-offset: -1px;
+}
+/* Strip the browser's default frame so the colour fills the whole box */
+.color_item input[type="color"]::-webkit-color-swatch-wrapper{ padding: 0; }
+.color_item input[type="color"]::-webkit-color-swatch{ border: 0; border-radius: 0.4rem; }
+.color_item input[type="color"]::-moz-color-swatch{ border: 0; border-radius: 0.4rem; }
+
+/* ---------- custom theme dropdown ---------- */
+.theme_picker{ position: relative; flex: 1; min-width: 0; }
+.theme_picker_btn{
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    text-align: left;
+}
+.theme_picker_list{
+    position: absolute;
+    top: calc(100% + 0.3rem);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 18rem;
+    overflow-y: auto;
+    background-color: var(--darkest-bg-color);
     border-radius: 0.5rem;
+    padding: 0.3rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+.theme_option{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    background: none;
+    color: var(--text-color);
+    text-align: left;
+    padding: 0.5rem 0.7rem;
+    border-radius: 0.35rem;
+}
+.theme_option:hover{ background-color: var(--darker-bg-color); }
+.theme_option.selected{ outline: 1px solid var(--main-accent-color); outline-offset: -1px; }
+.theme_mini{
+    display: flex;
+    flex: none;
+    height: 1rem;
+    border-radius: 0.25rem;
     overflow: hidden;
     outline: 1px solid var(--muted-color);
     outline-offset: -1px;
 }
-.theme_preview span{ width: 1.4rem; }
+.theme_mini span{ width: 0.45rem; }
 
 .settings_check{ display: flex; align-items: center; gap: 0.6rem; cursor: pointer; }
 .settings_check input{

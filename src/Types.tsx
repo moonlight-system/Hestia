@@ -38,6 +38,8 @@ export type Event = {
     // Set on each displayed occurrence of a repeating event: the real start/end of the series
     origStart?: Date;
     origEnd?: Date;
+    doneAt?: number[];   // raw from Firestore: start times (ms) of the occurrences ticked as done
+    done?: boolean;
 }
 
 export type Answer = {

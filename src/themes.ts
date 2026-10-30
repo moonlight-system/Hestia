@@ -4,7 +4,7 @@ export type ThemePreset = {
     colors: Record<string, string>;
 };
 
-function luminance(hex: string): number {
+export function luminance(hex: string): number {
     const h = hex.replace("#", "");
     const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
     const [r, g, b] = [0, 2, 4]
@@ -177,3 +177,85 @@ const LIGHT_THEMES: ThemePreset[] = [
 ];
 
 export const THEME_PRESETS: ThemePreset[] = [...DARK_THEMES, ...LIGHT_THEMES];
+
+// Every colour that defines a theme and is NOT computed from another one.
+// (--muted-color, --cell-other-bg-color and the "text on top of X" colours
+// are derived, so they are not listed.)
+export const EDITABLE_COLORS = [
+    { key: "--base-bg-color", label: "Background" },
+    { key: "--darker-bg-color", label: "Cards" },
+    { key: "--darkest-bg-color", label: "Sidebar" },
+    { key: "--text-color", label: "Text" },
+    { key: "--title-accent-color", label: "Titles" },
+    { key: "--main-accent-color", label: "Accent" },
+    { key: "--accent-text-color", label: "Accent as text" },
+    { key: "--secondary-accent-color", label: "Secondary accent" },
+    { key: "--danger-color", label: "Danger" },
+    { key: "--add-bg-color", label: "Add buttons" },
+    { key: "--view-btn-bg-color", label: "Toolbar buttons" },
+    { key: "--view-btn-active-bg-color", label: "Active toolbar button" },
+    { key: "--cell-bg-color", label: "Calendar cells" },
+    { key: "--cell-border-color", label: "Grid lines" },
+    { key: "--today-color", label: "Today highlight" },
+];
+
+// Some values are references like "var(--darker-bg-color)". A colour input needs a
+// real hex, so follow the references until one is found.
+export function resolveColor(colors: Record<string, string>, key: string): string {
+    let v = colors[key];
+    for (let i = 0; i < 5; i++) {
+        const m = v?.match(/^var\((--[\w-]+)\)$/);
+        if (!m) break;
+        v = colors[m[1]];
+    }
+    return v;
+}
+
+function contrast(a: string, b: string): number {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+}
+
+// These all default to the accent colour, so they follow it when it is changed
+const ACCENT_FOLLOWERS = [
+    "--accent-text-color",
+    "--add-bg-color",
+    "--view-btn-active-bg-color",
+    "--today-color",
+];
+
+// Applies the user's colour picks on top of a preset.
+export function withOverrides(
+    base: Record<string, string>,
+    overrides: Record<string, string> = {},
+): Record<string, string> {
+    const c = { ...base };
+
+    // 1. Changing the accent drags along everything that defaults to it...
+    const accent = overrides["--main-accent-color"];
+    if (accent) for (const k of ACCENT_FOLLOWERS) c[k] = accent;
+
+    // 2. ...but anything the user picked explicitly wins over that
+    Object.assign(c, overrides);
+
+    // 3. Text drawn on top of a colour is recomputed (black or white) when that colour changed
+    if (accent) c["--on-accent-color"] = onColor(c["--main-accent-color"]);
+    const textOn: [string, string][] = [
+        ["--add-bg-color", "--add-text-color"],
+        ["--view-btn-active-bg-color", "--view-btn-active-text-color"],
+        ["--today-color", "--today-text-color"],
+    ];
+    for (const [bg, text] of textOn) {
+        if (accent || overrides[bg]) c[text] = onColor(c[bg]);
+    }
+
+    // 4. If a new background makes the text unreadable, flip the text to black/white
+    //    (unless the user picked the text colour themselves)
+    if (
+        overrides["--base-bg-color"] && !overrides["--text-color"]
+        && contrast(c["--text-color"], c["--base-bg-color"]) < 3
+    ) {
+        c["--text-color"] = onColor(c["--base-bg-color"]);
+    }
+    return c;
+}

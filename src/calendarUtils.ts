@@ -95,6 +95,7 @@ export function expandEvent(ev: Event, from: Date, to: Date): Event[] {
         end: duration !== undefined ? new Date(start.getTime() + duration) : undefined,
         origStart: ev.start,
         origEnd: ev.end,
+        done: !!ev.doneAt?.includes(start.getTime()),   // <-- new
     });
 
     if ("monthDay" in r) {

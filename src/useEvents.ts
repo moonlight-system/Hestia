@@ -10,13 +10,17 @@ import type { Event } from "./Types";
 
 function toEvent(d: QueryDocumentSnapshot<DocumentData>): Event {
     const data = d.data();
+    const start: Date = data.start.toDate();
+    const doneAt: number[] = data.doneAt ?? [];
     return {
         id: d.id,
         name: data.name,
-        start: data.start.toDate(),
+        start,
         end: data.end ? data.end.toDate() : undefined,
         person: data.person ?? [],
         repeat: data.repeat,
+        doneAt,
+        done: doneAt.includes(start.getTime()),   // right for one-off events
     } as Event;
 }
 

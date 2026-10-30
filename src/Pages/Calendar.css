@@ -374,3 +374,19 @@
 /* Month pages never scroll; week pages scroll vertically if a day has many events */
 .pager.y .pager_pane{ overflow: hidden; }
 .pager.x .pager_pane{ overflow: hidden; }
+
+/* ---------- completed events ---------- */
+.cal_chip.done, .cal_block.done, .cal_card.done, .cal_wr_event.done{
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+.cal_card{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.cal_card_main{ min-width: 0; }
+.cal_card_check{ display: flex; flex: none; cursor: pointer; }
+.cal_card_check input{
+    width: 1.3rem;
+    height: 1.3rem;
+    margin: 0;
+    accent-color: var(--main-accent-color);
+    cursor: pointer;
+}

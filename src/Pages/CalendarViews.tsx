@@ -14,6 +14,7 @@ export type ViewProps = {
     onOpenMonth: (day: Date) => void;
     onEventClick: (ev: Event) => void;
     onEventContext: (ev: Event, x: number, y: number) => void;
+    onToggleDone: (ev: Event) => void;
 };
 
 function tooltip(ev: Event): string {
@@ -30,7 +31,7 @@ function EventChip({ ev, showTime, onClick, onContext }: {
 }){
     return(
         <div
-            className="cal_chip"
+            className={ev.done ? "cal_chip done" : "cal_chip"}
             style={ev.color ? ({ "--chip-color": ev.color } as CSSProperties) : undefined}
             title={tooltip(ev)}
             onClick={(e) => { e.stopPropagation(); onClick(ev); }}
@@ -205,7 +206,7 @@ function TimedEvent({ p, onClick, onContext }: {
 
     return(
         <div
-            className="cal_block"
+            className={ev.done ? "cal_block done" : "cal_block"}
             style={style}
             title={tooltip(ev)}
             onClick={(e) => { e.stopPropagation(); onClick(ev); }}
@@ -244,7 +245,7 @@ function WeekRows({ date, events, onOpenDay }: ViewProps){
                             {list.map((ev) => (
                                 <div
                                     key={ev.id}
-                                    className="cal_wr_event"
+                                    className={ev.done ? "cal_wr_event done" : "cal_wr_event"}
                                     style={ev.color ? ({ "--chip-color": ev.color } as CSSProperties) : undefined}
                                 >
                                     <span className="cal_wr_time">{timeLabel(ev.start)}</span> {ev.name}
@@ -318,7 +319,7 @@ function WeekColumns({ date, events, onAdd, onOpenDay, onEventClick, onEventCont
     )
 }
 
-function DayView({ date, events, onAdd, onEventClick, onEventContext }: ViewProps){
+function DayView({ date, events, onAdd, onEventClick, onEventContext, onToggleDone }: ViewProps){
     const list = eventsOnDay(events, date);
 
     return(
@@ -328,7 +329,7 @@ function DayView({ date, events, onAdd, onEventClick, onEventContext }: ViewProp
             {list.map((ev) => (
                 <div
                     key={ev.id}
-                    className="cal_card"
+                    className={ev.done ? "cal_card done" : "cal_card"}
                     style={ev.color ? ({ "--chip-color": ev.color } as CSSProperties) : undefined}
                     onClick={() => onEventClick(ev)}
                     onContextMenu={(e) => {
@@ -336,13 +337,26 @@ function DayView({ date, events, onAdd, onEventClick, onEventContext }: ViewProp
                         onEventContext(ev, e.clientX, e.clientY);
                     }}
                 >
-                    <div className="cal_card_name">{ev.name}</div>
-                    <div className="cal_card_time">{rangeLabel(ev)}</div>
-                    {ev.person && ev.person.length > 0 && (
-                        <div className="cal_card_people">
-                            {ev.person.map((p) => p.name).join(", ")}
-                        </div>
-                    )}
+                    <div className="cal_card_main">
+                        <div className="cal_card_name">{ev.name}</div>
+                        <div className="cal_card_time">{rangeLabel(ev)}</div>
+                        {ev.person && ev.person.length > 0 && (
+                            <div className="cal_card_people">
+                                {ev.person.map((p) => p.name).join(", ")}
+                            </div>
+                        )}
+                    </div>
+                    <label
+                        className="cal_card_check"
+                        title={ev.done ? "Mark as not done" : "Mark as done"}
+                        onClick={(e) => e.stopPropagation()}   // don't open the edit modal
+                    >
+                        <input
+                            type="checkbox"
+                            checked={!!ev.done}
+                            onChange={() => onToggleDone(ev)}
+                        />
+                    </label>
                 </div>
             ))}
         </div>

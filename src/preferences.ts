@@ -1,13 +1,30 @@
-import { DEFAULT_THEME, THEME_PRESETS } from "./themes";
+import { DEFAULT_THEME, THEME_PRESETS, luminance, withOverrides } from "./themes";
 
-export type Prefs = { theme: string; font: string; size: string };
+export type Prefs = {
+    theme: string;
+    font: string;
+    size: string;
+    overrides: Record<string, Record<string, string>>;   // theme name -> { css variable -> colour }
+};
 
 export const FONTS = [
-    { id: "default", label: "Default", stack: "" },
-    { id: "system", label: "System", stack: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' },
-    { id: "serif", label: "Serif", stack: 'Georgia, "Times New Roman", serif' },
+    // Monospace is first on purpose: it is the default, and also the fallback
+    // for anyone whose saved preference is the old "default" id.
     { id: "mono", label: "Monospace", stack: '"Cascadia Code", Consolas, Menlo, monospace' },
+    { id: "system", label: "System", stack: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' },
+    { id: "opendyslexic", label: "OpenDyslexic", stack: '"OpenDyslexic", sans-serif' },
+    { id: "atkinson", label: "Atkinson Hyperlegible", stack: '"Atkinson Hyperlegible", sans-serif' },
+    { id: "lexend", label: "Lexend", stack: '"Lexend", sans-serif' },
+    { id: "inter", label: "Inter", stack: '"Inter", sans-serif' },
+    { id: "nunito", label: "Nunito", stack: '"Nunito", sans-serif' },
+    { id: "spacegrotesk", label: "Space Grotesk", stack: '"Space Grotesk", sans-serif' },
     { id: "humanist", label: "Humanist", stack: '"Trebuchet MS", "Segoe UI", Verdana, sans-serif' },
+    { id: "serif", label: "Serif", stack: 'Georgia, "Times New Roman", serif' },
+    { id: "merriweather", label: "Merriweather", stack: '"Merriweather", serif' },
+    { id: "lora", label: "Lora", stack: '"Lora", serif' },
+    { id: "jetbrains", label: "JetBrains Mono", stack: '"JetBrains Mono", monospace' },
+    { id: "firacode", label: "Fira Code", stack: '"Fira Code", monospace' },
+    { id: "caveat", label: "Caveat (handwritten)", stack: '"Caveat", cursive' },
 ];
 
 export const SIZES = [
@@ -17,7 +34,7 @@ export const SIZES = [
 ];
 
 const KEY = "hestia-prefs";
-const DEFAULTS: Prefs = { theme: DEFAULT_THEME, font: "default", size: "normal" };
+const DEFAULTS: Prefs = { theme: DEFAULT_THEME, font: "mono", size: "normal", overrides: {} };
 
 export function loadPrefs(): Prefs {
     try {
@@ -40,11 +57,12 @@ export function applyPrefs(p: Prefs) {
     const root = document.documentElement;
 
     const theme = THEME_PRESETS.find((t) => t.name === p.theme) ?? THEME_PRESETS[0];
-    for (const [name, value] of Object.entries(theme.colors)) {
+    const colors = withOverrides(theme.colors, p.overrides?.[theme.name]);
+    for (const [name, value] of Object.entries(colors)) {
         root.style.setProperty(name, value);
     }
-    // Tells the browser to draw native things (date pickers, scrollbars) dark or light
-    root.style.colorScheme = theme.dark ? "dark" : "light";
+    // Dark or light is judged from the actual background, since the user may have changed it
+    root.style.colorScheme = luminance(colors["--base-bg-color"]) < 0.4 ? "dark" : "light";
 
     const font = FONTS.find((f) => f.id === p.font) ?? FONTS[0];
     if (font.stack) root.style.setProperty("--app-font", font.stack);
