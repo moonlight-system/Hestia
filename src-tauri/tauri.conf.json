@@ -35,7 +35,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY2QUYzNjM0RjZGNjkzNjAKUldSZ2svYjJORGF2WmdoNHZHVzFUa1N5NmNYVGJhY25RUjNYa2VDTERwdS9mWmYxODQ4ZXgyQjAK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE3NTc5OTc4MDY5NkY4QTQKUldTaytKWUdlSmxYcDExcmhLbWdvVldnTUxqeDU2eE5JTkZjS0RvbkN4NG9BSG0zN0ZWS1RHdUYK",
       "endpoints": [
         "https://github.com/moonlight-system/Hestia/releases/latest/download/latest.json"
       ]

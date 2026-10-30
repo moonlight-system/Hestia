@@ -9,7 +9,24 @@ permissions:
   contents: write
 
 jobs:
+  create-release:
+    runs-on: ubuntu-22.04
+    outputs:
+      release_id: ${{ steps.create.outputs.release_id }}
+    steps:
+      - name: Create the release if it doesn't exist
+        id: create
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" >/dev/null 2>&1 \
+            || gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" \
+                 --title "Hestia ${{ github.ref_name }}" --notes ""
+          id=$(gh api "repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}" --jq .id)
+          echo "release_id=$id" >> "$GITHUB_OUTPUT"
+
   release:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -63,8 +80,7 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: "Hestia ${{ github.ref_name }}"
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
