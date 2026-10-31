@@ -188,3 +188,5 @@
         scrollbar-color: var(--main-accent-color) transparent;
     }
 }
+
+.mobile_gear{ background: none; font-size: 1.5rem; padding: 0.3rem 0.6rem; display: flex; align-items: center; }

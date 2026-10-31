@@ -1,4 +1,4 @@
-export type NotifPrefs = { enabled: boolean; leadHours: number; silent: boolean };
+export type NotifPrefs = { enabled: boolean; leadHours: number; silent: boolean; activity: boolean };
 
 export const LEADS = [
     { hours: 1, label: "1 hour before" },
@@ -11,7 +11,7 @@ export const LEADS = [
 
 export const NOTIF_EVENT = "hestia-notif-prefs";
 const KEY = "hestia-notif-prefs";
-const DEFAULTS: NotifPrefs = { enabled: true, leadHours: 3, silent: false };
+const DEFAULTS: NotifPrefs = { enabled: true, leadHours: 3, silent: false, activity: true };
 
 export function loadNotifPrefs(): NotifPrefs {
     try {

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Hestia",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "identifier": "com.lin.hestia",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -14,7 +14,8 @@
       {
         "title": "Hestia",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "maximized": true
       }
     ],
     "security": {

@@ -40,6 +40,7 @@ export function useTasks(): { tasks: Task[]; today: Date } {
                         done: data.done ?? [],
                         completedAt: data.completedAt ? data.completedAt.toDate() : undefined,
                         createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
+                        createdBy: data.createdBy,
                     } as Task;
                 }));
             },

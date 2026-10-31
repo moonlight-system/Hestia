@@ -48,6 +48,21 @@ function SettingsNotifications(){
             </div>
 
             <div className="settings_card">
+                <h3>Activity</h3>
+                <label className="settings_check">
+                    <input
+                        type="checkbox"
+                        checked={prefs.activity}
+                        onChange={(e) => update({ activity: e.target.checked })}
+                    />
+                    Notify me about new asks and new tasks for me
+                </label>
+                <div className="settings_hint">
+                    Only works while the app is running in the background.
+                </div>
+            </div>
+            
+            <div className="settings_card">
                 <h3>Sound</h3>
                 <label className="settings_check">
                     <input

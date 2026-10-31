@@ -1,5 +1,4 @@
 import "./Tasks.css";
-import { useState } from "react";
 import {
     addDoc, arrayRemove, arrayUnion, collection, deleteDoc, deleteField,
     doc, Timestamp, updateDoc,
@@ -12,6 +11,7 @@ import { TaskModal, type TaskData, type TaskModalMode } from "./TaskModal";
 import { ContextMenu } from "./ContextMenu";
 import { HISTORY_LIMIT, dueOf, isComplete, nextDueOf, repeatLabel } from "../taskUtils";
 import type { Person, Task } from "../Types";
+import { Fragment, useState } from "react";
 
 type ModalState = { mode: TaskModalMode; id?: string; initial: TaskData };
 type MenuState = { x: number; y: number; task: Task };
@@ -118,6 +118,8 @@ function Tasks(){
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [showHistory, setShowHistory] = useState(false);
 
+    const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
     const col = collection(db, "households", hid, "tasks");
 
     function openCreate(){
@@ -180,6 +182,7 @@ function Tasks(){
             await updateDoc(doc(col, modal.id), fields);
         } else {
             fields.createdAt = Timestamp.now();
+            fields.createdBy = me;
             await addDoc(col, fields);
         }
         setModal(null);
@@ -219,6 +222,20 @@ function Tasks(){
             if (y) return 1;
             return a.createdAt.getTime() - b.createdAt.getTime();
         });
+    
+    // "Everyone" = an each-person task that includes every roommate
+    const everyone = (t: Task) =>
+        members.length > 0 && members.every((m) => t.participants.some((p) => p.id === m.id));
+    const isShared = (t: Task) => t.mode === "anyone" || (t.mode === "each" && everyone(t));
+    const isMine = (t: Task) =>
+        t.mode === "assigned" ? t.assignee?.id === me : t.participants.some((p) => p.id === me);
+
+    // Each list keeps the due-date order of `active`. Empty sections are hidden.
+    const sections = [
+        { id: "mine", title: "Mine", list: active.filter((t) => !isShared(t) && isMine(t)) },
+        { id: "shared", title: "Anyone / everyone", list: active.filter(isShared) },
+        { id: "others", title: "Others", list: active.filter((t) => !isShared(t) && !isMine(t)) },
+    ].filter((s) => s.list.length > 0);
 
     const finished = tasks
         .filter((t) => !t.repeat && isComplete(t))
@@ -247,7 +264,17 @@ function Tasks(){
 
             <div className="tasks_list">
                 {active.length === 0 && <div className="tasks_empty">Nothing to do. Enjoy it!</div>}
-                {active.map(card)}
+                {sections.map((s) => (
+                    <Fragment key={s.id}>
+                        <button
+                            className="task_history_toggle"
+                            onClick={() => setCollapsed((c) => ({ ...c, [s.id]: !c[s.id] }))}
+                        >
+                            {collapsed[s.id] ? "▸" : "▾"} {s.title} ({s.list.length})
+                        </button>
+                        {!collapsed[s.id] && s.list.map(card)}
+                    </Fragment>
+                ))}
             </div>
 
             {finished.length > 0 && (

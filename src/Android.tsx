@@ -9,12 +9,15 @@ import { Settings } from "./Pages/Settings"
 import { useTaskReminders } from "./useTaskReminders"
 import { openUrl } from "@tauri-apps/plugin-opener"
 import { useAndroidUpdate } from "./useAndroidUpdate"
+import { useActivityNotifications } from "./useActivityNotifications"
+import { Settings as SettingsIcon } from "lucide-react"
 
 const TABS = ["Calendar", "Tasks", "Asks", "Debts", "Rules"] as const;
 type Page = typeof TABS[number] | "Settings";
 
 function Android(){
     useTaskReminders();
+    useActivityNotifications();
     const update = useAndroidUpdate();
     const [page, setPage] = useState<Page>("Calendar");
 
@@ -26,7 +29,7 @@ function Android(){
                     className={page === "Settings" ? "mobile_gear active" : "mobile_gear"}
                     onClick={() => setPage("Settings")}
                 >
-                    ⚙
+                    <SettingsIcon size="1em" />
                 </button>
             </div>
 

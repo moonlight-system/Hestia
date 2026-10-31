@@ -22,6 +22,7 @@ export type Task = {
     done: string[];           // ids of the people who ticked it this cycle
     completedAt?: Date;       // one-time tasks only, for the history
     createdAt: Date;
+    createdBy?: string;
 };
 
 export type EventUnit = "days" | "weeks" | "months" | "years";
