@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { isAndroid } from "../platform";
-import { LEADS, loadNotifPrefs, saveNotifPrefs, type NotifPrefs } from "../notifPrefs";
+import { loadNotifPrefs, saveNotifPrefs, type NotifPrefs } from "../notifPrefs";
 
 function SettingsNotifications(){
     const [prefs, setPrefs] = useState<NotifPrefs>(loadNotifPrefs);
@@ -33,17 +33,18 @@ function SettingsNotifications(){
             </div>
 
             <div className="settings_card">
-                <h3>How early</h3>
-                <select
-                    className="settings_input"
-                    value={prefs.leadHours}
-                    disabled={!prefs.enabled}
-                    onChange={(e) => update({ leadHours: Number(e.target.value) })}
-                >
-                    {LEADS.map((l) => <option key={l.hours} value={l.hours}>{l.label}</option>)}
-                </select>
+                <h3>Morning reminder</h3>
+                <label className="settings_check">
+                    <input
+                        type="checkbox"
+                        checked={prefs.morning}
+                        disabled={!prefs.enabled}
+                        onChange={(e) => update({ morning: e.target.checked })}
+                    />
+                    Remind me at 6:00 about every task due today
+                </label>
                 <div className="settings_hint">
-                    Applies to tasks that have a due time. Every task with a due date also gets a reminder at 6:00 on its due day.
+                    How early the other reminder comes is set on each task, for tasks that have a due time.
                 </div>
             </div>
 

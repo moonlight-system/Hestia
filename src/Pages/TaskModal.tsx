@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Person, Repeat, TaskMode } from "../Types";
-import { toDateInput } from "../taskUtils";
+import { REMIND_OPTIONS, toDateInput } from "../taskUtils";
 
 export type TaskData = {
     name: string;
@@ -10,6 +10,7 @@ export type TaskData = {
     repeat?: Repeat;
     date?: Date;
     time?: string;
+    remind: number;
     description?: string;
 };
 export type TaskModalMode = "create" | "edit" | "rename";
@@ -47,6 +48,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
     const [error, setError] = useState("");
     const [busy, setBusy] = useState(false);
     const [description, setDescription] = useState(initial.description ?? "");
+    const [remind, setRemind] = useState(initial.remind);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -84,6 +86,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                 repeat: repeats ? { every: n, unit } : undefined,
                 date: date ? new Date(`${date}T00:00`) : undefined,
                 time: date && time ? time : undefined,
+                remind,
                 description: description.trim() || undefined,
             });
             // On success the parent closes this modal
@@ -193,6 +196,17 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                                     value={time}
                                     onChange={(e) => setTime(e.target.value)}
                                 />
+                            </label>
+                        )}
+
+                        {date && time && (
+                            <label>
+                                Remind me
+                                <select value={remind} onChange={(e) => setRemind(Number(e.target.value))}>
+                                    {REMIND_OPTIONS.map((o) => (
+                                        <option key={o.minutes} value={o.minutes}>{o.label}</option>
+                                    ))}
+                                </select>
                             </label>
                         )}
 

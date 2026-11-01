@@ -9,7 +9,7 @@ import { useMembers } from "../useMembers";
 import { useTasks } from "../useTasks";
 import { TaskModal, type TaskData, type TaskModalMode } from "./TaskModal";
 import { ContextMenu } from "./ContextMenu";
-import { HISTORY_LIMIT, dueOf, isComplete, nextDueOf, repeatLabel } from "../taskUtils";
+import { DEFAULT_REMIND, HISTORY_LIMIT, dueOf, isComplete, nextDueOf, repeatLabel } from "../taskUtils";
 import type { Person, Task } from "../Types";
 import { Fragment, useState } from "react";
 
@@ -129,6 +129,7 @@ function Tasks(){
                 name: "",
                 mode: "anyone",
                 participants: members.map(({ id, name }) => ({ id, name })),
+                remind: DEFAULT_REMIND,
             },
         });
     }
@@ -145,6 +146,7 @@ function Tasks(){
                 repeat: task.repeat,
                 date: task.date,
                 time: task.time,
+                remind: task.remind ?? DEFAULT_REMIND,
                 description: task.description,
             },
         });
@@ -160,7 +162,7 @@ function Tasks(){
             return;
         }
 
-        const fields: Record<string, unknown> = { name, mode: data.mode, cycle: 0, done: [] };
+        const fields: Record<string, unknown> = { name, mode: data.mode, cycle: 0, done: [], remind: data.remind };
         // Firestore rejects `undefined`, so optional fields are either written
         // or (when editing) removed
         const optional: Record<string, unknown> = {

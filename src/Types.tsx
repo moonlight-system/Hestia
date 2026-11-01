@@ -18,6 +18,7 @@ export type Task = {
     repeat?: Repeat;          // absent = one-time task
     date?: Date;              // due date (first due date if repeating)
     time?: string;
+    remind?: number;          // minutes before the due time; -1 = no early reminder; absent = default
     cycle: number;            // which repetition we're on, 0 = the first
     done: string[];           // ids of the people who ticked it this cycle
     completedAt?: Date;       // one-time tasks only, for the history

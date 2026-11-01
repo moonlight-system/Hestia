@@ -9,6 +9,12 @@ import { ContextMenu } from "./ContextMenu";
 import type { Answer, Ask, Person } from "../Types";
 import { useState, type CSSProperties } from "react";
 
+// Makes a textarea exactly as tall as its content
+function grow(el: HTMLTextAreaElement){
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+}
+
 type MenuState = { x: number; y: number; ask: Ask };
 
 type CardProps = {
@@ -27,8 +33,8 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
     const [busy, setBusy] = useState(false);
 
     const answered = members.filter((m) => ask.answers[m.id]).length;
-    // Every enabled part must be filled in
-    const canSend = (!ask.vote || vote !== undefined) && (!ask.text || text.trim() !== "");
+    // At least one part must be filled in; the other is optional
+    const canSend = vote !== undefined || text.trim() !== "";
 
     async function send(v: boolean | undefined, t: string){
         setBusy(true);
@@ -43,9 +49,15 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
     }
 
     function pick(v: boolean){
-        setVote(v);
+        if (ask.text) {
+            // Text is enabled too: just select. Clicking the active one again clears it,
+            // so you can answer with text only (or remove a check while editing).
+            setVote((cur) => cur === v ? undefined : v);
+            return;
+        }
         // Vote-only asks: one click is the whole answer
-        if (!ask.text) send(v, "");
+        setVote(v);
+        send(v, "");
     }
 
     function startEditing(){
@@ -75,12 +87,20 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
                 )}
                 {ask.text && (
                     <>
-                        <input
+                        <textarea
                             className="ask_input"
+                            rows={1}
                             placeholder="Your answer…"
                             value={text}
+                            // Runs on every render, so the height follows the text (and the initial text when editing)
+                            ref={(el) => { if (el) grow(el); }}
                             onChange={(e) => setText(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter" && canSend) send(vote, text); }}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    if (canSend) send(vote, text);
+                                }
+                            }}
                         />
                         <button
                             type="button"

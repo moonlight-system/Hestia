@@ -45,6 +45,8 @@
     border-left: 0.5rem solid var(--slot-color, var(--main-accent-color));
     background-color: color-mix(in srgb, var(--base-bg-color) 45%, transparent);
     opacity: 0.6;                      /* empty slot: dimmed */
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
 }
 .ask_slot.filled{
     background-color: var(--base-bg-color);
@@ -54,14 +56,15 @@
 .ask_who{ display: flex; align-items: center; gap: 0.5rem; width: 8rem; flex: none; }
 .ask_waiting{ color: var(--muted-color); font-size: 0.85rem; }
 
-.ask_answer{ display: flex; align-items: center; gap: 0.7rem; min-width: 0; flex: 1; }
+.ask_answer{ display: flex; align-items: center; gap: 0.7rem; min-width: 0; flex: 1 1 10rem; }
 .ask_mark{ font-size: 1.3rem; font-weight: 700; }
 .ask_mark.yes{ color: #34c17b; }
 .ask_mark.no{ color: var(--danger-color); }
 .ask_text{ overflow-wrap: anywhere; }
 .ask_change{ margin-left: auto; background: none; color: var(--muted-color); font-size: 0.8rem; }
 
-.ask_form{ display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0; }
+.ask_form{ display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; flex: 1 1 16rem; min-width: 0; }
+
 .ask_votes{ display: flex; gap: 0.4rem; }
 .ask_vote{
     width: 2.2rem;
@@ -78,7 +81,14 @@
 .ask_vote.no.active{ background-color: var(--danger-color); color: #fff; }
 .ask_input{
     flex: 1;
-    min-width: 0;
+    min-width: 6rem;
+    box-sizing: border-box;   /* so the JS height (scrollHeight) isn't off by the padding */
+    resize: none;
+    overflow: hidden;
+    border: 0;
+    outline: none;
+    font: inherit;
+    line-height: 1.4;
     background-color: var(--base-bg-color);
     color: var(--text-color);
     padding: 0.5rem 0.8rem;

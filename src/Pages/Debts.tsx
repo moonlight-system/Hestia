@@ -1,5 +1,5 @@
 import "./Debts.css";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
     addDoc, collection, deleteDoc, deleteField, doc, Timestamp, updateDoc,
 } from "firebase/firestore";
@@ -72,6 +72,7 @@ function Debts(){
     const [modal, setModal] = useState<ModalState | null>(null);
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [showPaid, setShowPaid] = useState(false);
+    const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
     const col = collection(db, "households", hid, "debts");
 
@@ -87,6 +88,15 @@ function Debts(){
         const money = open.filter((d) => d.kind === "money");
         return { open, paid, split: hasCycle(money), simple: simplify(money) };
     }, [debts]);
+
+    // A debt concerns me if I'm the one who owes or the one who is owed
+    const isMine = (d: Debt) => d.debtor.id === me || d.creditor.id === me;
+
+    // Each list keeps the newest-first order of `open`. Empty sections are hidden.
+    const sections = [
+        { id: "mine", title: "Involving me", list: open.filter(isMine) },
+        { id: "others", title: "Between other roommates", list: open.filter((d) => !isMine(d)) },
+    ].filter((s) => s.list.length > 0);
 
     const nameOf = (p: Person) => members.find((m) => m.id === p.id)?.name ?? p.name;
 
@@ -188,7 +198,17 @@ function Debts(){
                     </div>
 
                     {open.length === 0 && <div className="debts_empty">No open debts.</div>}
-                    {open.map(card)}
+                    {sections.map((s) => (
+                        <Fragment key={s.id}>
+                            <button
+                                className="debt_history_toggle"
+                                onClick={() => setCollapsed((c) => ({ ...c, [s.id]: !c[s.id] }))}
+                            >
+                                {collapsed[s.id] ? "▸" : "▾"} {s.title} ({s.list.length})
+                            </button>
+                            {!collapsed[s.id] && s.list.map(card)}
+                        </Fragment>
+                    ))}
 
                     {paid.length > 0 && (
                         <>

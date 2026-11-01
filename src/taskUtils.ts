@@ -57,3 +57,19 @@ export function toDateInput(d: Date): string {
     const p = (n: number) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
+
+export const DEFAULT_REMIND = 180;   // same as the old global default: 3 hours
+export const NO_REMIND = -1;
+
+export const REMIND_OPTIONS = [
+    { minutes: 0, label: "At due time" },
+    { minutes: 15, label: "15 minutes before" },
+    { minutes: 30, label: "30 minutes before" },
+    { minutes: 60, label: "1 hour before" },
+    { minutes: 180, label: "3 hours before" },
+    { minutes: 360, label: "6 hours before" },
+    { minutes: 720, label: "12 hours before" },
+    { minutes: 1440, label: "1 day before" },
+    { minutes: 2880, label: "2 days before" },
+    { minutes: NO_REMIND, label: "No early reminder" },
+];

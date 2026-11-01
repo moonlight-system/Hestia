@@ -6,7 +6,7 @@ import {
 import { auth } from "./firebase";
 import { useTasks } from "./useTasks";
 import { startOfDay } from "./calendarUtils";
-import { occurrence, targetCycle } from "./taskUtils";
+import { DEFAULT_REMIND, NO_REMIND, occurrence, targetCycle } from "./taskUtils";
 import { loadNotifPrefs, NOTIF_EVENT } from "./notifPrefs";
 import type { Task } from "./Types";
 
@@ -82,7 +82,6 @@ export function useTaskReminders() {
 
                 const now = Date.now();
                 const horizon = now + HORIZON_DAYS * 24 * HOUR;
-                const lead = prefs.leadHours * HOUR;
                 const items: { at: Date; title: string; body: string }[] = [];
 
                 for (const raw of tasks) {
@@ -92,11 +91,15 @@ export function useTaskReminders() {
                     const task: Task = k0 === raw.cycle ? raw : { ...raw, cycle: k0, done: [] };
                     if (!task.date) continue;
 
+                    const remind = task.remind ?? DEFAULT_REMIND;
+
                     for (let k = task.cycle; k < task.cycle + 60; k++) {
                         const due = task.repeat ? occurrence(task.date, task.repeat, k) : task.date;
                         const morning = new Date(due.getFullYear(), due.getMonth(), due.getDate(), MORNING_HOUR, 0);
                         const dueAt = task.time ? withTime(due, task.time) : undefined;
-                        const early = dueAt ? new Date(dueAt.getTime() - lead) : undefined;
+                        const early = dueAt && remind !== NO_REMIND
+                            ? new Date(dueAt.getTime() - remind * 60_000)
+                            : undefined;
 
                         // Rounds only move forward in time: stop at the first one past the horizon
                         const first = early && early < morning ? early : morning;
@@ -106,7 +109,7 @@ export function useTaskReminders() {
                         const round = k === task.cycle ? task : { ...task, done: [] };
                         if (needsMe(round, me)) {
                             // 1. Morning reminder (skipped if the task is due before 6:00 anyway)
-                            if (morning.getTime() > now && (!dueAt || dueAt > morning)) {
+                            if (prefs.morning && morning.getTime() > now && (!dueAt || dueAt > morning)) {
                                 items.push({
                                     at: morning,
                                     title: task.name,
