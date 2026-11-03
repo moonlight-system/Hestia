@@ -3,6 +3,7 @@ import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useHouseholdId } from "../HouseholdContext";
 import { useMembers } from "../useMembers";
+import { t } from "../i18n";
 
 type HouseholdDoc = { name: string; inviteCode: string; ownerId: string };
 
@@ -32,10 +33,10 @@ function SettingsHousehold(){
         if (!clean) return;
         try {
             await updateDoc(doc(db, "households", hid), { name: clean });
-            setMsg("Saved.");
+            setMsg(t("Saved."));
         } catch (err) {
             console.error(err);
-            setMsg("Could not save. Try again.");
+            setMsg(t("Could not save. Try again."));
         }
     }
 
@@ -50,12 +51,12 @@ function SettingsHousehold(){
         }
     }
 
-    if (!household) return <div className="settings_hint">Loading…</div>;
+    if (!household) return <div className="settings_hint">{t("Loading…")}</div>;
 
     return(
         <>
             <form className="settings_card" onSubmit={rename}>
-                <h3>Household name</h3>
+                <h3>{t("Household name")}</h3>
                 <div className="settings_row">
                     <input
                         className="settings_input"
@@ -63,26 +64,26 @@ function SettingsHousehold(){
                         onChange={(e) => { setName(e.target.value); setMsg(""); }}
                         required
                     />
-                    <button className="settings_btn" type="submit">Save</button>
+                    <button className="settings_btn" type="submit">{t("Save")}</button>
                 </div>
                 {msg && <div className="settings_hint">{msg}</div>}
             </form>
 
             <div className="settings_card">
-                <h3>Invite code</h3>
+                <h3>{t("Invite code")}</h3>
                 <div className="settings_row">
                     <div className="invite_code">{household.inviteCode}</div>
                     <button className="settings_btn" onClick={copyCode}>
-                        {copied ? "Copied!" : "Copy"}
+                        {copied ? t("Copied!") : t("Copy")}
                     </button>
                 </div>
                 <div className="settings_hint">
-                    Give this code to a roommate. They enter it after creating their account.
+                    {t("Give this code to a roommate. They enter it after creating their account.")}
                 </div>
             </div>
 
             <div className="settings_card">
-                <h3>Members ({members.length})</h3>
+                <h3>{t("Members")} ({members.length})</h3>
                 {members.map((m) => (
                     <div className="member_row" key={m.id}>
                         <span
@@ -90,8 +91,8 @@ function SettingsHousehold(){
                             style={{ backgroundColor: m.color ?? "var(--main-accent-color)" }}
                         />
                         <span className="member_name">{m.name}</span>
-                        {m.id === me && <span className="member_tag">you</span>}
-                        {m.id === household.ownerId && <span className="member_tag">owner</span>}
+                        {m.id === me && <span className="member_tag">{t("you")}</span>}
+                        {m.id === household.ownerId && <span className="member_tag">{t("owner")}</span>}
                     </div>
                 ))}
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { t } from "../i18n";
 
 export type RuleData = { name: string; description?: string };
 export type RuleModalMode = "create" | "edit";
@@ -34,7 +35,7 @@ function RuleModal({ mode, initial, onSave, onClose }: Props){
             // On success the parent closes this modal
         } catch (err) {
             console.error(err);
-            setError("Could not save. Try again.");
+            setError(t("Could not save. Try again."));
             setBusy(false);
         }
     }
@@ -45,21 +46,21 @@ function RuleModal({ mode, initial, onSave, onClose }: Props){
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <form className="cal_modal" onSubmit={submit}>
-                <h3>{mode === "create" ? "New rule" : "Edit rule"}</h3>
+                <h3>{mode === "create" ? t("New rule") : t("Edit rule")}</h3>
 
                 <input
                     autoFocus
-                    placeholder="Rule title"
+                    placeholder={t("Rule title")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
 
                 <label>
-                    Description (optional)
+                    {t("Description (optional)")}
                     <textarea
                         rows={3}
-                        placeholder="Details, exceptions, anything useful…"
+                        placeholder={t("Details, exceptions, anything useful…")}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
@@ -68,8 +69,8 @@ function RuleModal({ mode, initial, onSave, onClose }: Props){
                 {error && <div className="cal_error">{error}</div>}
 
                 <div className="cal_modal_actions">
-                    <button type="button" className="cal_cancel" onClick={onClose}>Cancel</button>
-                    <button type="submit" className="cal_save" disabled={busy}>Save</button>
+                    <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{t("Save")}</button>
                 </div>
             </form>
         </div>

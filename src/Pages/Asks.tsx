@@ -8,6 +8,7 @@ import { AskModal, type AskData } from "./AskModal";
 import { ContextMenu } from "./ContextMenu";
 import type { Answer, Ask, Person } from "../Types";
 import { useState, type CSSProperties } from "react";
+import { t } from "../i18n";
 
 // Makes a textarea exactly as tall as its content
 function grow(el: HTMLTextAreaElement){
@@ -90,7 +91,7 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
                         <textarea
                             className="ask_input"
                             rows={1}
-                            placeholder="Your answer…"
+                            placeholder={t("Your answer…")}
                             value={text}
                             // Runs on every render, so the height follows the text (and the initial text when editing)
                             ref={(el) => { if (el) grow(el); }}
@@ -107,7 +108,7 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
                             className="ask_send"
                             disabled={!canSend || busy}
                             onClick={() => send(vote, text)}
-                        >Send</button>
+                        >{t("Send")}</button>
                     </>
                 )}
             </div>
@@ -128,7 +129,7 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
                 <div className="ask_content">{ask.content}</div>
                 <div className="ask_meta">
                     {members.find((m) => m.id === ask.author.id)?.name ?? ask.author.name}
-                    {" · "}{answered}/{members.length} answered
+                    {" · "}{answered}/{members.length} {t("answered")}
                 </div>
             </div>
 
@@ -161,12 +162,12 @@ function AskCard({ ask, members, me, onAnswer, onContext }: CardProps){
                                     {a.text && <span className="ask_text">{a.text}</span>}
                                     {isMe && (
                                         <button className="ask_change" onClick={startEditing}>
-                                            Change
+                                            {t("Change")}
                                         </button>
                                     )}
                                 </div>
                             ) : (
-                                <div className="ask_waiting">Waiting…</div>
+                                <div className="ask_waiting">{t("Waiting…")}</div>
                             )}
                         </div>
                     )
@@ -217,12 +218,12 @@ function Asks(){
     return(
         <div className="asks_container">
             <div className="asks_toolbar">
-                <h2 className="asks_title">Asks</h2>
-                <button className="asks_new" onClick={() => setCreating(true)}>+ New ask</button>
+                <h2 className="asks_title">{t("Asks")}</h2>
+                <button className="asks_new" onClick={() => setCreating(true)}>{t("+ New ask")}</button>
             </div>
 
             <div className="asks_list">
-                {asks.length === 0 && <div className="asks_empty">No asks yet.</div>}
+                {asks.length === 0 && <div className="asks_empty">{t("No asks yet.")}</div>}
                 {asks.map((a) => (
                     <AskCard
                         key={a.id}

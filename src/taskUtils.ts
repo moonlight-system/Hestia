@@ -1,5 +1,6 @@
 import { addDays, addMonths } from "./calendarUtils";
 import type { Repeat, Task } from "./Types";
+import { t } from "./i18n";
 
 export const HISTORY_LIMIT = 5;
 
@@ -49,7 +50,7 @@ export function targetCycle(task: Task, today: Date): number {
 
 export function repeatLabel(r: Repeat): string {
     const unit = r.unit === "days" ? "day" : r.unit === "weeks" ? "week" : "month";
-    return r.every === 1 ? `Every ${unit}` : `Every ${r.every} ${unit}s`;
+    return r.every === 1 ? t(`Every ${unit}`) : t(`Every {n} ${unit}s`, { n: r.every });
 }
 
 // Date -> "2026-10-25", the format <input type="date"> needs

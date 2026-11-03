@@ -11,6 +11,7 @@ import { DebtModal, type DebtForm, type DebtModalMode } from "./DebtModal";
 import { ContextMenu } from "./ContextMenu";
 import { formatMoney, hasCycle, simplify } from "../debtUtils";
 import type { Debt, Person } from "../Types";
+import { t } from "../i18n";
 
 type ModalState = { mode: DebtModalMode; id?: string; initial: DebtForm };
 type MenuState = { x: number; y: number; debt: Debt };
@@ -40,7 +41,7 @@ function DebtCard({ debt, members, me, onToggle, onContext }: CardProps){
         >
             <div className="debt_names">
                 <span>{nameOf(debt.debtor)}</span>
-                <span className="debt_owes">owes</span>
+                <span className="debt_owes">{t("owes")}</span>
                 <span>{nameOf(debt.creditor)}</span>
             </div>
             <div className="debt_amount">
@@ -50,7 +51,7 @@ function DebtCard({ debt, members, me, onToggle, onContext }: CardProps){
 
             <label
                 className="debt_box"
-                title={canTick ? "Mark as paid back" : "Only the person who is owed can mark this as paid"}
+                title={canTick ? t("Mark as paid back") : t("Only the person who is owed can mark this as paid")}
             >
                 <input
                     type="checkbox"
@@ -94,8 +95,8 @@ function Debts(){
 
     // Each list keeps the newest-first order of `open`. Empty sections are hidden.
     const sections = [
-        { id: "mine", title: "Involving me", list: open.filter(isMine) },
-        { id: "others", title: "Between other roommates", list: open.filter((d) => !isMine(d)) },
+        { id: "mine", title: t("Involving me"), list: open.filter(isMine) },
+        { id: "others", title: t("Between other roommates"), list: open.filter((d) => !isMine(d)) },
     ].filter((s) => s.list.length > 0);
 
     const nameOf = (p: Person) => members.find((m) => m.id === p.id)?.name ?? p.name;
@@ -193,18 +194,18 @@ function Debts(){
             <div className={split ? "debts_wrap split" : "debts_wrap"}>
                 <div className="debts_col">
                     <div className="debts_head">
-                        <h2 className="debts_title">{split ? "All debts" : "Debts"}</h2>
-                        <button className="debts_new" onClick={openCreate}>+ New debt</button>
+                        <h2 className="debts_title">{split ? t("All debts") : t("Debts")}</h2>
+                        <button className="debts_new" onClick={openCreate}>{t("+ New debt")}</button>
                     </div>
 
-                    {open.length === 0 && <div className="debts_empty">No open debts.</div>}
+                    {open.length === 0 && <div className="debts_empty">{t("No open debts.")}</div>}
                     {sections.map((s) => (
                         <Fragment key={s.id}>
                             <button
                                 className="debt_history_toggle"
                                 onClick={() => setCollapsed((c) => ({ ...c, [s.id]: !c[s.id] }))}
                             >
-                                {collapsed[s.id] ? "▸" : "▾"} {s.title} ({s.list.length})
+                                {collapsed[s.id] ? "▸" : "▾"} {t(s.title)} ({s.list.length})
                             </button>
                             {!collapsed[s.id] && s.list.map(card)}
                         </Fragment>
@@ -216,7 +217,7 @@ function Debts(){
                                 className="debt_history_toggle"
                                 onClick={() => setShowPaid((s) => !s)}
                             >
-                                {showPaid ? "▾" : "▸"} Paid back ({paid.length})
+                                {showPaid ? "▾" : "▸"} {t("Paid back")} ({paid.length})
                             </button>
                             {showPaid && paid.map(card)}
                         </>
@@ -226,17 +227,17 @@ function Debts(){
                 {split && (
                     <div className="debts_col">
                         <div className="debts_head">
-                            <h2 className="debts_title">Simplified</h2>
+                            <h2 className="debts_title">{t("Simplified")}</h2>
                         </div>
 
                         {simple.length === 0 && (
-                            <div className="debts_empty">Everything cancels out. All square!</div>
+                            <div className="debts_empty">{t("Everything cancels out. All square!")}</div>
                         )}
                         {simple.map((t) => (
                             <div className="debt_card" key={t.from.id + t.to.id}>
                                 <div className="debt_names">
                                     <span>{nameOf(t.from)}</span>
-                                    <span className="debt_owes">owes</span>
+                                    <span className="debt_owes">{t("owes")}</span>
                                     <span>{nameOf(t.to)}</span>
                                 </div>
                                 <div className="debt_amount">{formatMoney(t.cents)}</div>
@@ -244,7 +245,7 @@ function Debts(){
                         ))}
 
                         <div className="debts_hint">
-                            Open money debts, netted out. Tick the original debts as they get paid back.
+                            {t("Open money debts, netted out. Tick the original debts as they get paid back.")}
                         </div>
                     </div>
                 )}

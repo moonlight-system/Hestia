@@ -4,6 +4,7 @@ import { SettingsHousehold } from "./SettingsHousehold";
 import { SettingsCustomization } from "./SettingsCustomization";
 import { SettingsAccount } from "./SettingsAccount";
 import { SettingsNotifications } from "./SettingsNotifications";
+import { t } from "../i18n";
 
 
 const TABS = ["Household", "Customization", "Notifications", "Account"] as const;
@@ -14,16 +15,16 @@ function Settings(){
 
     return(
         <div className="settings_container">
-            <h2 className="settings_heading">Settings</h2>
+            <h2 className="settings_heading">{t("Settings")}</h2>
 
             <div className="settings_tabs">
-                {TABS.map((t) => (
+                {TABS.map((name) => (
                     <button
-                        key={t}
-                        className={t === tab ? "settings_tab active" : "settings_tab"}
-                        onClick={() => setTab(t)}
+                        key={name}
+                        className={name === tab ? "settings_tab active" : "settings_tab"}
+                        onClick={() => setTab(name)}
                     >
-                        {t}
+                        {t(name)}
                     </button>
                 ))}
             </div>

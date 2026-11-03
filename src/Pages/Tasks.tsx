@@ -12,6 +12,7 @@ import { ContextMenu } from "./ContextMenu";
 import { DEFAULT_REMIND, HISTORY_LIMIT, dueOf, isComplete, nextDueOf, repeatLabel } from "../taskUtils";
 import type { Person, Task } from "../Types";
 import { Fragment, useState } from "react";
+import { locale, t } from "../i18n";
 
 type ModalState = { mode: TaskModalMode; id?: string; initial: TaskData };
 type MenuState = { x: number; y: number; task: Task };
@@ -34,7 +35,7 @@ function TaskCard({ task, members, me, today, onToggle, onContext }: CardProps){
 
     // Names are looked up live, so a renamed roommate shows their new name
     const nameOf = (p: Person) => members.find((m) => m.id === p.id)?.name ?? p.name;
-    const fmt = (d: Date) => d.toLocaleDateString([], { day: "numeric", month: "short" });
+    const fmt = (d: Date) => d.toLocaleDateString(locale(), { day: "numeric", month: "short" });
 
     type Box = { id: string; label?: string; checked: boolean; enabled: boolean };
     const boxes: Box[] =
@@ -43,30 +44,30 @@ function TaskCard({ task, members, me, today, onToggle, onContext }: CardProps){
                 id: p.id,
                 label: nameOf(p),
                 checked: task.done.includes(p.id),
-                enabled: p.id === me,
+                enabled: true,
             }))
         : task.mode === "assigned" && task.assignee
             ? [{
                 id: task.assignee.id,
                 checked: task.done.includes(task.assignee.id),
-                enabled: task.assignee.id === me,
+                enabled: true,
             }]
         : [{ id: me, checked: task.done.length > 0, enabled: true }];
 
     const parts: { text: string; bad?: boolean }[] = [];
     const at = task.time ? ` ${task.time}` : "";
-    if (next) parts.push({ text: `Next ${fmt(next)}${at}` });
+    if (next) parts.push({ text: `${t("Next")} ${fmt(next)}${at}` });
     else if (due) parts.push({
-        text: overdue ? `Overdue since ${fmt(due)}${at}` : `Due ${fmt(due)}${at}`,
+        text: `${overdue ? t("Overdue since") : t("Due")} ${fmt(due)}${at}`,
         bad: overdue,
     });
     if (task.repeat) parts.push({ text: repeatLabel(task.repeat) });
     if (task.mode === "assigned" && task.assignee) {
-        parts.push({ text: `Assigned to ${nameOf(task.assignee)}` });
+        parts.push({ text: `${t("Assigned to")} ${nameOf(task.assignee)}` });
     }
     if (task.mode === "anyone" && task.done[0]) {
         const who = members.find((m) => m.id === task.done[0])?.name;
-        if (who) parts.push({ text: `Done by ${who}` });
+        if (who) parts.push({ text: `${t("Done by")} ${who}` });
     }
 
     return(
@@ -260,19 +261,19 @@ function Tasks(){
     return(
         <div className="tasks_container">
             <div className="tasks_toolbar">
-                <h2 className="tasks_title">Tasks</h2>
-                <button className="tasks_new" onClick={openCreate}>+ New task</button>
+                <h2 className="tasks_title">{t("Tasks")}</h2>
+                <button className="tasks_new" onClick={openCreate}>{t("+ New task")}</button>
             </div>
 
             <div className="tasks_list">
-                {active.length === 0 && <div className="tasks_empty">Nothing to do. Enjoy it!</div>}
+                {active.length === 0 && <div className="tasks_empty">{t("Nothing to do. Enjoy it!")}</div>}
                 {sections.map((s) => (
                     <Fragment key={s.id}>
                         <button
                             className="task_history_toggle"
                             onClick={() => setCollapsed((c) => ({ ...c, [s.id]: !c[s.id] }))}
                         >
-                            {collapsed[s.id] ? "▸" : "▾"} {s.title} ({s.list.length})
+                            {collapsed[s.id] ? "▸" : "▾"} {t(s.title)} ({s.list.length})
                         </button>
                         {!collapsed[s.id] && s.list.map(card)}
                     </Fragment>
@@ -282,7 +283,7 @@ function Tasks(){
             {finished.length > 0 && (
                 <div className="tasks_list">
                     <button className="task_history_toggle" onClick={() => setShowHistory((s) => !s)}>
-                        {showHistory ? "▾" : "▸"} Completed ({finished.length})
+                        {showHistory ? "▾" : "▸"} {t("Completed")} ({finished.length})
                     </button>
                     {showHistory && finished.map(card)}
                 </div>

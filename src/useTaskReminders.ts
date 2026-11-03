@@ -9,6 +9,7 @@ import { startOfDay } from "./calendarUtils";
 import { DEFAULT_REMIND, NO_REMIND, occurrence, targetCycle } from "./taskUtils";
 import { loadNotifPrefs, NOTIF_EVENT } from "./notifPrefs";
 import type { Task } from "./Types";
+import { locale } from "./i18n";
 
 const HORIZON_DAYS = 14;   // only schedule this far ahead; refreshed whenever the app opens
 const MAX_PENDING = 50;
@@ -39,9 +40,9 @@ function needsMe(task: Task, me: string): boolean {
 
 function dueText(due: Date, at: Date): string {
     const days = Math.round((startOfDay(due).getTime() - startOfDay(at).getTime()) / 86_400_000);
-    if (days === 0) return "Due today";
-    if (days === 1) return "Due tomorrow";
-    return `Due ${due.toLocaleDateString([], { day: "numeric", month: "short" })}`;
+    if (days === 0) return t("Due today");
+    if (days === 1) return t("Due tomorrow");
+    return `${t("Due")} ${due.toLocaleDateString(locale(), { day: "numeric", month: "short" })}`;
 }
 
 export function useTaskReminders() {
@@ -113,7 +114,7 @@ export function useTaskReminders() {
                                 items.push({
                                     at: morning,
                                     title: task.name,
-                                    body: `Due today${task.time ? ` at ${task.time}` : ""}`,
+                                    body: `${t("Due today")}${task.time ? ` ${t("at")} ${task.time}` : ""}`,
                                 });
                             }
                             // 2. Reminder before the due time
@@ -121,7 +122,7 @@ export function useTaskReminders() {
                                 items.push({
                                     at: early,
                                     title: task.name,
-                                    body: `${dueText(due, early)} at ${task.time}`,
+                                    body: `${dueText(due, early)} ${t("at")} ${task.time}`,
                                 });
                             }
                         }

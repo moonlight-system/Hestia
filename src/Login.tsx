@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase";
 import "./Login.css";
+import { t } from "./i18n";
 
 function Login(){
     const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -64,7 +65,7 @@ function Login(){
                 {error && <div className="login_error">{error}</div>}
 
                 <button type="submit" className="login_submit" disabled={busy}>
-                    {mode === "signin" ? "Sign in" : "Create account"}
+                    {mode === "signin" ? t("Sign in") : t("Create account")}
                 </button>
 
                 <button
@@ -72,7 +73,7 @@ function Login(){
                     className="login_switch"
                     onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(""); }}
                 >
-                    {mode === "signin" ? "No account yet? Create one" : "Already have an account? Sign in"}
+                    {mode === "signin" ? t("No account yet? Create one") : t("Already have an account? Sign in")}
                 </button>
             </form>
         </div>
@@ -84,17 +85,17 @@ function friendlyError(code: string){
         case "auth/invalid-credential":
         case "auth/wrong-password":
         case "auth/user-not-found":
-            return "Wrong email or password.";
+            return t("Wrong email or password.");
         case "auth/email-already-in-use":
-            return "An account with this email already exists.";
+            return t("An account with this email already exists.");
         case "auth/weak-password":
-            return "Password must be at least 6 characters.";
+            return t("Password must be at least 6 characters.");
         case "auth/invalid-email":
-            return "That email doesn't look valid.";
+            return t("That email doesn't look valid.");
         case "auth/network-request-failed":
-            return "No connection. Check your internet and try again.";
+            return t("No connection. Check your internet and try again.");
         default:
-            return "Something went wrong. Try again.";
+            return t("Something went wrong. Try again.");
     }
 }
 

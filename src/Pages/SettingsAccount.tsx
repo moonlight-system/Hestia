@@ -4,6 +4,7 @@ import { doc, updateDoc, writeBatch } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useHouseholdId } from "../HouseholdContext";
 import { useMembers } from "../useMembers";
+import { t } from "../i18n";
 
 const PALETTE = [
     "#e5383b", "#ff8a3d", "#ffcc4d", "#8ac926", "#34c17b", "#2dd4bf",
@@ -33,10 +34,10 @@ function SettingsAccount(){
             batch.update(doc(db, "users", user.uid), { name: clean });
             batch.update(doc(db, "households", hid, "members", user.uid), { name: clean });
             await batch.commit();
-            setMsg("Saved.");
+            setMsg(t("Saved."));
         } catch (err) {
             console.error(err);
-            setMsg("Could not save. Try again.");
+            setMsg(t("Could not save. Try again."));
         } finally {
             setBusy(false);
         }
@@ -53,7 +54,7 @@ function SettingsAccount(){
     return(
         <>
             <form className="settings_card" onSubmit={saveName}>
-                <h3>Your name</h3>
+                <h3>{t("Your name")}</h3>
                 <div className="settings_row">
                     <input
                         className="settings_input"
@@ -61,15 +62,15 @@ function SettingsAccount(){
                         onChange={(e) => { setName(e.target.value); setMsg(""); }}
                         required
                     />
-                    <button className="settings_btn" type="submit" disabled={busy}>Save</button>
+                    <button className="settings_btn" type="submit" disabled={busy}>{t("Save")}</button>
                 </div>
                 {msg && <div className="settings_hint">{msg}</div>}
             </form>
 
             <div className="settings_card">
-                <h3>Your colour</h3>
+                <h3>{t("Your colour")}</h3>
                 <div className="settings_hint">
-                    Used on the calendar for events where you're the only participant.
+                    {t("Used on the calendar for events where you're the only participant.")}
                 </div>
                 <div className="swatches">
                     {PALETTE.map((c) => (
@@ -85,10 +86,10 @@ function SettingsAccount(){
             </div>
 
             <div className="settings_card">
-                <h3>Session</h3>
-                <div className="settings_hint">Signed in as {user.email}</div>
+                <h3>{t("Session")}</h3>
+                <div className="settings_hint">{t("Signed in as")} {user.email}</div>
                 <button className="settings_btn danger" onClick={() => signOut(auth)}>
-                    Log out
+                    {t("Log out")}
                 </button>
             </div>
         </>

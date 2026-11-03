@@ -1,10 +1,13 @@
 import { DEFAULT_THEME, THEME_PRESETS, luminance, withOverrides } from "./themes";
+import { setI18n } from "./i18n";
 
 export type Prefs = {
     theme: string;
     font: string;
     size: string;
     overrides: Record<string, Record<string, string>>;   // theme name -> { css variable -> colour }
+    lang: string;
+    currency: string;
 };
 
 export const FONTS = [
@@ -34,7 +37,7 @@ export const SIZES = [
 ];
 
 const KEY = "hestia-prefs";
-const DEFAULTS: Prefs = { theme: DEFAULT_THEME, font: "mono", size: "normal", overrides: {} };
+const DEFAULTS: Prefs = { theme: DEFAULT_THEME, font: "mono", size: "normal", overrides: {}, lang: "en", currency: "EUR" };
 
 export function loadPrefs(): Prefs {
     try {
@@ -74,4 +77,5 @@ export function applyPrefs(p: Prefs) {
     const MOBILE_SCALE = 0.8;
     const scale = root.dataset.platform === "mobile" ? MOBILE_SCALE : 1;
     root.style.fontSize = `${size.px * scale}px`;
+    setI18n(p.lang, p.currency);
 }

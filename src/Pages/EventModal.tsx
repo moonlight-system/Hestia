@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { EventRepeat, EventUnit, Person } from "../Types";
 import { toInputValue } from "../calendarUtils";
+import { locale } from "../i18n";
 
 export type EventData = { name: string; start: Date; end?: Date; person: Person[]; repeat?: EventRepeat };
 export type ModalMode = "create" | "edit" | "rename";
@@ -52,18 +53,18 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
         const startDate = new Date(start);
         const endDate = end ? new Date(end) : undefined;
         if (mode !== "rename" && endDate && endDate < startDate) {
-            setError("The end can't be before the start.");
+            setError(t("The end can't be before the start."));
             return;
         }
         const n = Math.floor(Number(every));
         const day = Math.floor(Number(monthDay));
         if (mode !== "rename") {
             if (kind === "interval" && !(n >= 1)) {
-                setError("The repeat interval must be at least 1.");
+                setError(t("The repeat interval must be at least 1."));
                 return;
             }
             if (kind === "monthday" && !(day >= 1 && day <= 31)) {
-                setError("Pick a day of the month between 1 and 31.");
+                setError(t("Pick a day of the month between 1 and 31."));
                 return;
             }
         }
@@ -83,7 +84,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
             // On success the parent closes this modal
         } catch (err) {
             console.error(err);
-            setError("Could not save. Try again.");
+            setError(t("Could not save. Try again."));
             setBusy(false);
         }
     }
@@ -95,7 +96,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <form className="cal_modal" onSubmit={submit}>
-                <h3>{TITLES[mode]}</h3>
+                <h3>{t(TITLES[mode])}</h3>
 
                 <input
                     autoFocus
@@ -108,7 +109,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                 {mode !== "rename" && (
                     <>
                         <label>
-                            Starts
+                            {t("Starts")}
                             <input
                                 type="datetime-local"
                                 value={start}
@@ -117,7 +118,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                             />
                         </label>
                         <label>
-                            Ends (optional)
+                            {t("Ends (optional)")}
                             <input
                                 type="datetime-local"
                                 value={end}
@@ -125,28 +126,28 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                                 onChange={(e) => setEnd(e.target.value)}
                             />
                         </label>
-                        <div className="cal_label">Repeat</div>
+                        <div className="cal_label">{t("Repeat")}</div>
                         <div className="cal_people">
                             <button
                                 type="button"
                                 className={kind === "none" ? "chip active" : "chip"}
                                 onClick={() => setKind("none")}
-                            >Never</button>
+                            >{t("Never")}</button>
                             <button
                                 type="button"
                                 className={kind === "interval" ? "chip active" : "chip"}
                                 onClick={() => setKind("interval")}
-                            >Every…</button>
+                            >{t("Every…")}</button>
                             <button
                                 type="button"
                                 className={kind === "monthday" ? "chip active" : "chip"}
                                 onClick={() => setKind("monthday")}
-                            >Day of month</button>
+                            >{t("Day of month")}</button>
                         </div>
 
                         {kind === "interval" && (
                             <div className="task_repeat_row">
-                                Every
+                                {t("Every")}
                                 <input
                                     type="number"
                                     min={1}
@@ -154,10 +155,10 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                                     onChange={(e) => setEvery(e.target.value)}
                                 />
                                 <select value={unit} onChange={(e) => setUnit(e.target.value as EventUnit)}>
-                                    <option value="days">days</option>
-                                    <option value="weeks">weeks</option>
-                                    <option value="months">months</option>
-                                    <option value="years">years</option>
+                                    <option value="days">{t("days")}</option>
+                                    <option value="weeks">{t("weeks")}</option>
+                                    <option value="months">{t("months")}</option>
+                                    <option value="years">{t("years")}</option>
                                 </select>
                             </div>
                         )}
@@ -165,7 +166,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                         {kind === "monthday" && (
                             <>
                                 <div className="task_repeat_row">
-                                    On day
+                                    {t("On day")}
                                     <input
                                         type="number"
                                         min={1}
@@ -173,17 +174,17 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                                         value={monthDay}
                                         onChange={(e) => setMonthDay(e.target.value)}
                                     />
-                                    of every month
+                                    {t("of every month")}
                                 </div>
                                 <div className="task_hint">
-                                    Starts at the first such day on or after the start date. Short months use their last day.
+                                    {t("Starts at the first such day on or after the start date. Short months use their last day.")}
                                 </div>
                             </>
                         )}
                         {kind !== "none" && (
-                            <div className="task_hint">Editing or deleting applies to the whole series.</div>
+                            <div className="task_hint">{t("Editing or deleting applies to the whole series.")}</div>
                         )}
-                        <div className="cal_label">Who's involved</div>
+                        <div className="cal_label">{t("Who's involved")}</div>
                         <div className="cal_people">
                             {members.map((m) => (
                                 <button
@@ -202,8 +203,8 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
                 {error && <div className="cal_error">{error}</div>}
 
                 <div className="cal_modal_actions">
-                    <button type="button" className="cal_cancel" onClick={onClose}>Cancel</button>
-                    <button type="submit" className="cal_save" disabled={busy}>Save</button>
+                    <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{t("Save")}</button>
                 </div>
             </form>
         </div>

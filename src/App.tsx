@@ -10,8 +10,11 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import { HouseholdSetup } from "./HouseholdSetup";
 import { HouseholdContext } from "./HouseholdContext";
+import { useI18n } from "./i18n";
 
 function App() {
+  useI18n();   // re-render everything when the language or currency changes
+  
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
 

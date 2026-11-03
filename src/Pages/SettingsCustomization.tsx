@@ -5,6 +5,7 @@ import {
 import { EDITABLE_COLORS, THEME_PRESETS, resolveColor, withOverrides } from "../themes";
 import { ThemePicker } from "./ThemePicker";
 import { Dropdown } from "./Dropdown";
+import { CURRENCIES, LANGUAGES, t } from "../i18n";
 
 function SettingsCustomization(){
     const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
@@ -35,7 +36,22 @@ function SettingsCustomization(){
     return(
         <>
             <div className="settings_card">
-                <h3>Theme</h3>
+                <h3>{t("Language")}</h3>
+                <select className="settings_input" value={prefs.lang} onChange={(e) => update({ lang: e.target.value })}>
+                    {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
+                </select>
+            </div>
+
+            <div className="settings_card">
+                <h3>{t("Currency")}</h3>
+                <select className="settings_input" value={prefs.currency} onChange={(e) => update({ currency: e.target.value })}>
+                    {CURRENCIES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                </select>
+                <div className="settings_hint">{t("Only the display changes: existing amounts are not converted.")}</div>
+            </div>
+            
+            <div className="settings_card">
+                <h3>{t("Theme")}</h3>
                 <ThemePicker value={theme.name} onChange={(name) => update({ theme: name })} />
                 <div className="color_grid">
                     {EDITABLE_COLORS.map((c) => (
@@ -45,12 +61,12 @@ function SettingsCustomization(){
                                 value={resolveColor(shown, c.key)}
                                 onChange={(e) => setColor(c.key, e.target.value)}
                             />
-                            <span>{c.label}</span>
+                            <span>{t(c.label)}</span>
                         </label>
                     ))}
                 </div>
                 <div className="settings_hint">
-                    Click a colour to change it. Your changes are kept separately for each theme.
+                    {t("Click a colour to change it. Your changes are kept separately for each theme.")}
                 </div>
                 {hasCustom && (
                     <button
@@ -58,13 +74,13 @@ function SettingsCustomization(){
                         style={{ alignSelf: "flex-start" }}
                         onClick={resetColors}
                     >
-                        Reset this theme's colours
+                        {t("Reset this theme's colours")}
                     </button>
                 )}
             </div>
 
             <div className="settings_card">
-                <h3>Font</h3>
+                <h3>{t("Font")}</h3>
                 <Dropdown
                     value={font.id}
                     options={FONTS.map((f) => ({
@@ -76,13 +92,12 @@ function SettingsCustomization(){
                     onChange={(id) => update({ font: id })}
                 />
                 <div className="settings_hint">
-                    Monospace, System, Humanist and Serif use fonts already on your device, so they can look
-                    different from one device to another. All the others are bundled with the app.
+                    {t("Monospace, System, Humanist and Serif use fonts already on your device, so they can look different from one device to another. All the others are bundled with the app.")}
                 </div>
             </div>
 
             <div className="settings_card">
-                <h3>Text size</h3>
+                <h3>{t("Text size")}</h3>
                 <select
                     className="settings_input"
                     value={prefs.size}
@@ -92,7 +107,7 @@ function SettingsCustomization(){
                 </select>
             </div>
 
-            <div className="settings_hint">These choices are saved on this device only.</div>
+            <div className="settings_hint">{t("These choices are saved on this device only.")}</div>
         </>
     )
 }

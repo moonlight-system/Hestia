@@ -1,9 +1,15 @@
 import type { Debt, Person } from "./Types";
+import { currencyCode, locale } from "./i18n";
 
 export type Transfer = { from: Person; to: Person; cents: number };
 
 export function formatMoney(cents: number): string {
-    return new Intl.NumberFormat([], { style: "currency", currency: "EUR" }).format(cents / 100);
+    return new Intl.NumberFormat(locale(), { style: "currency", currency: currencyCode() }).format(cents / 100);
+}
+
+export function currencySymbol(): string {
+    return new Intl.NumberFormat(locale(), { style: "currency", currency: currencyCode() })
+        .formatToParts(0).find((p) => p.type === "currency")?.value ?? currencyCode();
 }
 
 // True if the debts contain a loop: money going both ways between two people,

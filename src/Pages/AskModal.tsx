@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { t } from "../i18n";
 
 export type AskData = { content: string; vote: boolean; text: boolean };
 
@@ -23,13 +24,13 @@ function AskModal({ onSave, onClose }: Props){
     async function submit(e: FormEvent){
         e.preventDefault();
         setError("");
-        if (!vote && !text) { setError("Pick at least one way to answer."); return; }
+        if (!vote && !text) { setError(t("Pick at least one way to answer.")); return; }
         setBusy(true);
         try {
             await onSave({ content: content.trim(), vote, text });
         } catch (err) {
             console.error(err);
-            setError("Could not save. Try again.");
+            setError(t("Could not save. Try again."));
             setBusy(false);
         }
     }
@@ -40,18 +41,18 @@ function AskModal({ onSave, onClose }: Props){
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <form className="cal_modal" onSubmit={submit}>
-                <h3>New ask</h3>
+                <h3>{t("New ask")}</h3>
 
                 <textarea
                     autoFocus
                     rows={3}
-                    placeholder="Can I bring people over on Monday?"
+                    placeholder={t("Can I bring people over on Monday?")}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
                 />
 
-                <div className="cal_label">How can roommates answer?</div>
+                <div className="cal_label">{t("How can roommates answer?")}</div>
                 <div className="cal_people">
                     <button
                         type="button"
@@ -65,16 +66,16 @@ function AskModal({ onSave, onClose }: Props){
                         className={text ? "chip active" : "chip"}
                         onClick={() => setText((t) => !t)}
                     >
-                        Text
+                        {t("Text")}
                     </button>
                 </div>
-                <div className="task_hint">If you pick both, each roommate gives both.</div>
+                <div className="task_hint">{t("If you pick both, each roommate gives both.")}</div>
 
                 {error && <div className="cal_error">{error}</div>}
 
                 <div className="cal_modal_actions">
-                    <button type="button" className="cal_cancel" onClick={onClose}>Cancel</button>
-                    <button type="submit" className="cal_save" disabled={busy}>Post</button>
+                    <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{("Post")}</button>
                 </div>
             </form>
         </div>

@@ -5,6 +5,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import "./Login.css";
+import { t } from "./i18n";
 
 // No 0/O or 1/I so codes are easy to read out loud
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -47,7 +48,7 @@ function HouseholdSetup(){
             await batch.commit();
         } catch (err) {
             console.error(err);
-            setError("Could not create the household. Try again.");
+            setError(t("Could not create the household. Try again."));
         } finally {
             setBusy(false);
         }
@@ -64,7 +65,7 @@ function HouseholdSetup(){
 
             const invite = await getDoc(doc(db, "invites", inviteCode));
             if (!invite.exists()) {
-                setError("No household found with this code.");
+                setError(t("No household found with this code."));
                 return;
             }
             const hid = invite.data().householdId as string;
@@ -79,7 +80,7 @@ function HouseholdSetup(){
             await batch.commit();
         } catch (err) {
             console.error(err);
-            setError("Could not join the household. Check the code and try again.");
+            setError(t("Could not join the household. Check the code and try again."));
         } finally {
             setBusy(false);
         }
@@ -92,34 +93,34 @@ function HouseholdSetup(){
 
                 <form className="login_form" onSubmit={createHousehold}>
                     <input
-                        placeholder="New household name"
+                        placeholder={t("New household name")}
                         value={houseName}
                         onChange={(e) => setHouseName(e.target.value)}
                         required
                     />
                     <button type="submit" className="login_submit" disabled={busy}>
-                        Create household
+                        {t("Create household")}
                     </button>
                 </form>
 
-                <div className="login_or">or</div>
+                <div className="login_or">{t("or")}</div>
 
                 <form className="login_form" onSubmit={joinHousehold}>
                     <input
-                        placeholder="Invite code"
+                        placeholder={t("Invite code")}
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
                         required
                     />
                     <button type="submit" className="login_submit" disabled={busy}>
-                        Join household
+                        {t("Join household")}
                     </button>
                 </form>
 
                 {error && <div className="login_error">{error}</div>}
 
                 <button type="button" className="login_switch" onClick={() => signOut(auth)}>
-                    Log out
+                    {t("Log out")}
                 </button>
             </div>
         </div>

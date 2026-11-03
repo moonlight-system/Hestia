@@ -4,7 +4,7 @@ import {
 } from "../calendarUtils";
 import { type CSSProperties } from "react";
 import { isAndroid } from "../platform";
-
+import { locale, t } from "../i18n";
 
 export type ViewProps = {
     date: Date;
@@ -51,7 +51,7 @@ function YearView({ date, events, onOpenDay, onOpenMonth }: ViewProps){
     const today = new Date();
     const year = date.getFullYear();
     const letters = Array.from({ length: 7 }, (_, i) =>
-        addDays(startOfWeek(today), i).toLocaleDateString([], { weekday: "narrow" }));
+        addDays(startOfWeek(today), i).toLocaleDateString(locale(), { weekday: "narrow" }));
 
     return(
         <div className="cal_year">
@@ -62,7 +62,7 @@ function YearView({ date, events, onOpenDay, onOpenMonth }: ViewProps){
                 return(
                     <div className="cal_mini" key={m}>
                         <button className="cal_mini_title" onClick={() => onOpenMonth(first)}>
-                            {first.toLocaleDateString([], { month: "long" })}
+                            {first.toLocaleDateString(locale(), { month: "long" })}
                         </button>
                         <div className="cal_mini_grid">
                             {letters.map((l, i) => <div key={i} className="cal_mini_wd">{l}</div>)}
@@ -89,7 +89,7 @@ function YearView({ date, events, onOpenDay, onOpenMonth }: ViewProps){
 function MonthView({ date, events, onAdd, onOpenDay, onEventClick, onEventContext }: ViewProps){
     const today = new Date();
     const days = monthGrid(date);
-    const weekdays = days.slice(0, 7).map((d) => d.toLocaleDateString([], { weekday: "short" }));
+    const weekdays = days.slice(0, 7).map((d) => d.toLocaleDateString(locale(), { weekday: "short" }));
     const MAX = 3;
 
     return(
@@ -114,7 +114,7 @@ function MonthView({ date, events, onAdd, onOpenDay, onEventClick, onEventContex
                                     {day.getDate()}
                                 </button>
                                 {!isAndroid && (
-                                    <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
+                                    <button className="cal_add" title={t("Add event")} onClick={() => onAdd(day)}>
                                         +
                                     </button>
                                 )}
@@ -129,7 +129,7 @@ function MonthView({ date, events, onAdd, onOpenDay, onEventClick, onEventContex
                             ))}
                             {list.length > MAX && (
                                 <button className="cal_more" onClick={() => onOpenDay(day)}>
-                                    +{list.length - MAX} more
+                                    +{list.length - MAX} {t("more")}
                                 </button>
                             )}
                         </div>
@@ -238,7 +238,7 @@ function WeekRows({ date, events, onOpenDay }: ViewProps){
                         onClick={() => onOpenDay(day)}
                     >
                         <div className="cal_wr_label">
-                            <span>{day.toLocaleDateString([], { weekday: "short" })}</span>
+                            <span>{day.toLocaleDateString(locale(), { weekday: "short" })}</span>
                             <strong>{day.getDate()}</strong>
                         </div>
                         <div className="cal_wr_events">
@@ -279,7 +279,7 @@ function WeekColumns({ date, events, onAdd, onOpenDay, onEventClick, onEventCont
                         className={"cal_week_head" + (sameDay(day, today) ? " today" : "")}
                     >
                         <button className="cal_week_day" onClick={() => onOpenDay(day)}>
-                            <span>{day.toLocaleDateString([], { weekday: "short" })}</span>
+                            <span>{day.toLocaleDateString(locale(), { weekday: "short" })}</span>
                             <strong>{day.getDate()}</strong>
                         </button>
                         <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
@@ -324,8 +324,8 @@ function DayView({ date, events, onAdd, onEventClick, onEventContext, onToggleDo
 
     return(
         <div className="cal_day">
-            <button className="cal_day_add" onClick={() => onAdd(date)}>+ Add event</button>
-            {list.length === 0 && <div className="cal_empty">Nothing planned this day.</div>}
+            <button className="cal_day_add" onClick={() => onAdd(date)}>{t("+ Add event")}</button>
+            {list.length === 0 && <div className="cal_empty">{t("Nothing planned this day.")}</div>}
             {list.map((ev) => (
                 <div
                     key={ev.id}
@@ -348,7 +348,7 @@ function DayView({ date, events, onAdd, onEventClick, onEventContext, onToggleDo
                     </div>
                     <label
                         className="cal_card_check"
-                        title={ev.done ? "Mark as not done" : "Mark as done"}
+                        title={ev.done ? t("Mark as not done") : t("Mark as done")}
                         onClick={(e) => e.stopPropagation()}   // don't open the edit modal
                     >
                         <input

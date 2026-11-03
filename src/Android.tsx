@@ -2,6 +2,7 @@ import "./Android.css"
 import { useState } from "react"
 import { Calendar } from "./Pages/Calendar"
 import { Tasks } from "./Pages/Tasks"
+import { Groceries } from "./Pages/Groceries"
 import { Asks } from "./Pages/Asks"
 import { Debts } from "./Pages/Debts"
 import { Rules } from "./Pages/Rules"
@@ -11,8 +12,9 @@ import { openUrl } from "@tauri-apps/plugin-opener"
 import { useAndroidUpdate } from "./useAndroidUpdate"
 import { useActivityNotifications } from "./useActivityNotifications"
 import { Settings as SettingsIcon } from "lucide-react"
+import { t } from "./i18n";
 
-const TABS = ["Calendar", "Tasks", "Asks", "Debts", "Rules"] as const;
+const TABS = ["Calendar", "Tasks", "Groceries", "Asks", "Debts", "Rules"] as const;
 type Page = typeof TABS[number] | "Settings";
 
 function Android(){
@@ -35,14 +37,15 @@ function Android(){
 
             {update && (
                 <div className="mobile_update">
-                    <span>New update available ({update.version})</span>
-                    <button onClick={() => openUrl(update.url).catch(console.error)}>Update</button>
+                    <span>{t("New update available")} ({update.version})</span>
+                    <button onClick={() => openUrl(update.url).catch(console.error)}>{t("Update")}</button>
                 </div>
             )}
 
             <div className="mobile_page">
                 {page === "Calendar" && <Calendar />}
                 {page === "Tasks" && <Tasks />}
+                {page === "Groceries" && <Groceries />}
                 {page === "Asks" && <Asks />}
                 {page === "Debts" && <Debts />}
                 {page === "Rules" && <Rules />}
@@ -50,13 +53,13 @@ function Android(){
             </div>
 
             <div className="mobile_tabs">
-                {TABS.map((t) => (
+                {TABS.map((t2) => (
                     <button
-                        key={t}
-                        className={t === page ? "mobile_tab active" : "mobile_tab"}
-                        onClick={() => setPage(t)}
+                        key={t2}
+                        className={t2 === page ? "mobile_tab active" : "mobile_tab"}
+                        onClick={() => setPage(t2)}
                     >
-                        {t}
+                        {t(tab)}
                     </button>
                 ))}
             </div>

@@ -11,6 +11,7 @@ import { useRules } from "../useRules";
 import { RuleModal, type RuleData, type RuleModalMode } from "./RuleModal";
 import { ContextMenu } from "./ContextMenu";
 import type { Person, Rule } from "../Types";
+import { t } from "../i18n";
 
 
 type ModalState = { mode: RuleModalMode; id?: string; initial: RuleData };
@@ -138,7 +139,7 @@ function Rules(){
     return(
         <div className="rules_container">
             <div className="rules_toolbar">
-                <h2 className="rules_title">Rules</h2>
+                <h2 className="rules_title">{t("Rules")}</h2>
 
                 <div className="rules_actions">
                     <label className="rules_accept_all">
@@ -148,14 +149,14 @@ function Rules(){
                             disabled={rules.length === 0}
                             onChange={toggleAll}
                         />
-                        Accept all
+                        {t("Accept all")}
                     </label>
-                    <button className="rules_new" onClick={openCreate}>+ Add rule</button>
+                    <button className="rules_new" onClick={openCreate}>{t("+ Add rule")}</button>
                 </div>
             </div>
 
             <div className="rules_list">
-                {sorted.length === 0 && <div className="rules_empty">No rules yet.</div>}
+                {sorted.length === 0 && <div className="rules_empty">{t("No rules yet.")}</div>}
                 {sorted.map((r) => (
                     <RuleCard
                         key={r.id}

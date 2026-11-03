@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { t } from "../i18n";
 
 type Props = {
     x: number;
@@ -36,17 +37,17 @@ function ContextMenu({ x, y, onClose, onEdit, onRename, onToggle, toggleLabel, o
                     <button onClick={() => { onToggle(); onClose(); }}>{toggleLabel}</button>
                 )}
                 {onEdit && (
-                    <button onClick={() => { onEdit(); onClose(); }}>Edit…</button>
+                    <button onClick={() => { onEdit(); onClose(); }}>{t("Edit…")}</button>
                 )}
                 {onRename && (
-                    <button onClick={() => { onRename(); onClose(); }}>Rename</button>
+                    <button onClick={() => { onRename(); onClose(); }}>{t("Rename")}</button>
                 )}
                 {confirming ? (
                     <button className="danger" onClick={() => { onDelete(); onClose(); }}>
-                        Click again to delete
+                        {t("Click again to delete")}
                     </button>
                 ) : (
-                    <button className="danger" onClick={() => setConfirming(true)}>Delete</button>
+                    <button className="danger" onClick={() => setConfirming(true)}>{t("Delete")}</button>
                 )}
             </div>
         </div>

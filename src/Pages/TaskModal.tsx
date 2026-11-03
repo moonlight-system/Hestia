@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Person, Repeat, TaskMode } from "../Types";
 import { REMIND_OPTIONS, toDateInput } from "../taskUtils";
+import { locale, t } from "../i18n";
 
 export type TaskData = {
     name: string;
@@ -92,7 +93,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
             // On success the parent closes this modal
         } catch (err) {
             console.error(err);
-            setError("Could not save. Try again.");
+            setError(t("Could not save. Try again."));
             setBusy(false);
         }
     }
@@ -103,11 +104,11 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <form className="cal_modal" onSubmit={submit}>
-                <h3>{TITLES[mode]}</h3>
+                <h3>{t(TITLES[mode])}</h3>
 
                 <input
                     autoFocus
-                    placeholder="Task name"
+                    placeholder={t("Task name")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -115,7 +116,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
 
                 {mode !== "rename" && (
                     <>
-                        <div className="cal_label">Who completes it</div>
+                        <div className="cal_label">{t("Who completes it")}</div>
                         <div className="cal_people">
                             {WHO.map((w) => (
                                 <button
@@ -124,15 +125,15 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                                     className={who === w.id ? "chip active" : "chip"}
                                     onClick={() => setWho(w.id)}
                                 >
-                                    {w.label}
+                                    {t(w.label)}
                                 </button>
                             ))}
                         </div>
-                        <div className="task_hint">{WHO.find((w) => w.id === who)?.hint}</div>
+                        <div className="task_hint">{t(WHO.find((w) => w.id === who)?.hint ?? "")}</div>
 
                         {who === "assigned" && (
                             <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
-                                <option value="">Choose a roommate…</option>
+                                <option value="">{t("Choose a roommate…")}</option>
                                 {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                             </select>
                         )}
@@ -158,12 +159,12 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                                 checked={repeats}
                                 onChange={(e) => setRepeats(e.target.checked)}
                             />
-                            Repeats
+                            {t("Repeats")}
                         </label>
 
                         {repeats && (
                             <div className="task_repeat_row">
-                                Every
+                                {t("Every")}
                                 <input
                                     type="number"
                                     min={1}
@@ -171,15 +172,15 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                                     onChange={(e) => setEvery(e.target.value)}
                                 />
                                 <select value={unit} onChange={(e) => setUnit(e.target.value as Repeat["unit"])}>
-                                    <option value="days">days</option>
-                                    <option value="weeks">weeks</option>
-                                    <option value="months">months</option>
+                                    <option value="days">{t("days")}</option>
+                                    <option value="weeks">{t("weeks")}</option>
+                                    <option value="months">{t("months")}</option>
                                 </select>
                             </div>
                         )}
 
                         <label>
-                            {repeats ? "First due date" : "Due date (optional)"}
+                            {repeats ? t("First due date") : t("Due date (optional)")}
                             <input
                                 type="date"
                                 value={date}
@@ -190,7 +191,7 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
 
                         {date && (
                             <label>
-                                Due time (optional)
+                                {t("Due time (optional)")}
                                 <input
                                     type="time"
                                     value={time}
@@ -201,20 +202,20 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
 
                         {date && time && (
                             <label>
-                                Remind me
+                                {t("Remind me")}
                                 <select value={remind} onChange={(e) => setRemind(Number(e.target.value))}>
                                     {REMIND_OPTIONS.map((o) => (
-                                        <option key={o.minutes} value={o.minutes}>{o.label}</option>
+                                        <option key={o.minutes} value={o.minutes}>{t(o.label)}</option>
                                     ))}
                                 </select>
                             </label>
                         )}
 
                         <label>
-                            Description (optional)
+                            {t("Description (optional)")}
                             <textarea
                                 rows={3}
-                                placeholder="Instructions, details, anything useful…"
+                                placeholder={t("Instructions, details, anything useful…")}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
@@ -225,8 +226,8 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
                 {error && <div className="cal_error">{error}</div>}
 
                 <div className="cal_modal_actions">
-                    <button type="button" className="cal_cancel" onClick={onClose}>Cancel</button>
-                    <button type="submit" className="cal_save" disabled={busy}>Save</button>
+                    <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{t("Save")}</button>
                 </div>
             </form>
         </div>

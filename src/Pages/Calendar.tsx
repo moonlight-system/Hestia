@@ -14,6 +14,7 @@ import { EventModal, type EventData, type ModalMode } from "./EventModal";
 import { ContextMenu } from "./ContextMenu";
 import type { Event } from "../Types";
 import { isAndroid } from "../platform";
+import { locale, t } from "../i18n";
 
 type View = "year" | "month" | "week" | "day";
 const VIEWS: View[] = ["year", "month", "week", "day"];
@@ -26,15 +27,15 @@ function titleFor(view: View, date: Date): string {
         case "year":
             return String(date.getFullYear());
         case "month":
-            return date.toLocaleDateString([], { month: "long", year: "numeric" });
+            return date.toLocaleDateString(locale(), { month: "long", year: "numeric" });
         case "week": {
             const s = startOfWeek(date);
             const e = addDays(s, 6);
-            const f = (d: Date) => d.toLocaleDateString([], { day: "numeric", month: "short" });
+            const f = (d: Date) => d.toLocaleDateString(locale(), { day: "numeric", month: "short" });
             return `${f(s)} – ${f(e)}, ${e.getFullYear()}`;
         }
         case "day":
-            return date.toLocaleDateString([], isAndroid
+            return date.toLocaleDateString(locale(), isAndroid
                 ? { weekday: "short", day: "numeric", month: "short", year: "numeric" }
                 : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
     }
@@ -190,7 +191,7 @@ function Calendar(){
             <div className="cal_toolbar">
                 <div className="cal_nav">
                     <button onClick={() => move(-1)}>‹</button>
-                    <button onClick={() => setDate(startOfDay(new Date()))}>Today</button>
+                    <button onClick={() => setDate(startOfDay(new Date()))}>{t("Today")}</button>
                     <button onClick={() => move(1)}>›</button>
                 </div>
 
@@ -205,7 +206,7 @@ function Calendar(){
                             className={v === view ? "cal_view_btn active" : "cal_view_btn"}
                             onClick={() => setView(v)}
                         >
-                            {v}
+                            {t(v)}
                         </button>
                     ))}
                 </div>
@@ -259,7 +260,7 @@ function Calendar(){
                     onEdit={() => openEdit(menu.ev)}
                     onRename={() => openEdit(menu.ev, "rename")}
                     onToggle={() => toggleDone(menu.ev)}
-                    toggleLabel={menu.ev.done ? "Mark as not done" : "Mark as done"}
+                    toggleLabel={t(menu.ev.done ? "Mark as not done" : "Mark as done")}
                     onDelete={() => remove(menu.ev)}
                 />
             )}

@@ -1,4 +1,5 @@
 import type { Event } from "./Types";
+import { locale } from "./i18n";
 
 export function startOfDay(d: Date): Date {
     const x = new Date(d);
@@ -55,14 +56,14 @@ export function eventsOnDay(events: Event[], day: Date): Event[] {
 }
 
 export function timeLabel(d: Date): string {
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit" });
 }
 
 export function rangeLabel(ev: Event): string {
     if (!ev.end) return timeLabel(ev.start);
     if (sameDay(ev.start, ev.end)) return `${timeLabel(ev.start)} – ${timeLabel(ev.end)}`;
     const f = (d: Date) =>
-        d.toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+        d.toLocaleString(locale(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     return `${f(ev.start)} → ${f(ev.end)}`;
 }
 

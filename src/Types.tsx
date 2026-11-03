@@ -79,3 +79,17 @@ export type Rule = {
     agreed: string[];         // ids of the roommates who agreed to follow it
     createdAt: Date;
 };
+
+export type GroceryStaple = {
+    id: string;
+    name: string;
+    needed: boolean;          // ticked = "we're out of it, buy more"
+    createdAt: Date;
+};
+
+export type GroceryItem = {
+    id: string;
+    name: string;
+    addedBy: Person;
+    createdAt: Date;
+};

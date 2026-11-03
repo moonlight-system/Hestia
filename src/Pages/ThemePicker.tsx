@@ -1,5 +1,6 @@
 import { EDITABLE_COLORS, THEME_PRESETS, resolveColor, type ThemePreset } from "../themes";
 import { Dropdown } from "./Dropdown";
+import { locale, t } from "../i18n";
 
 type Props = { value: string; onChange: (name: string) => void };
 
@@ -13,13 +14,12 @@ function Mini({ theme }: { theme: ThemePreset }){
     )
 }
 
-const options = THEME_PRESETS.map((t) => ({
-    id: t.name,
-    label: t.name + (t.dark ? "" : " (light)"),
-    extra: <Mini theme={t} />,
-}));
-
 function ThemePicker({ value, onChange }: Props){
+    const options = THEME_PRESETS.map((p) => ({
+        id: p.name,
+        label: p.name + (p.dark ? "" : ` (${t("light")})`),
+        extra: <Mini theme={p} />,
+    }));
     return <Dropdown value={value} options={options} onChange={onChange} />
 }
 

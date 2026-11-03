@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Person } from "../Types";
+import { t } from "../i18n";
+import { currencySymbol } from "../debtUtils";
 
 export type DebtForm = {
     debtorId: string;
@@ -40,16 +42,16 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
         setError("");
 
         if (!debtorId || !creditorId || debtorId === creditorId) {
-            setError("Pick two different roommates.");
+            setError(t("Pick two different roommates."));
             return;
         }
         const cents = Math.round(Number(amount) * 100);
         if (kind === "money" && !(cents >= 1)) {
-            setError("Enter an amount greater than zero.");
+            setError(t("Enter an amount greater than zero."));
             return;
         }
         if (kind === "text" && !what.trim()) {
-            setError("Say what is owed.");
+            setError(t("Say what is owed."));
             return;
         }
 
@@ -66,7 +68,7 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
             // On success the parent closes this modal
         } catch (err) {
             console.error(err);
-            setError("Could not save. Try again.");
+            setError(t("Could not save. Try again."));
             setBusy(false);
         }
     }
@@ -77,16 +79,16 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
             <form className="cal_modal" onSubmit={submit}>
-                <h3>{mode === "create" ? "New debt" : "Edit debt"}</h3>
+                <h3>{mode === "create" ? t("New debt") : t("Edit debt")}</h3>
 
                 <div className="debt_pair_row">
                     <select value={debtorId} onChange={(e) => setDebtorId(e.target.value)}>
-                        <option value="">Who owes…</option>
+                        <option value="">{t("Who owes…")}</option>
                         {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
-                    <span>owes</span>
+                    <span>{t("owes")}</span>
                     <select value={creditorId} onChange={(e) => setCreditorId(e.target.value)}>
-                        <option value="">To whom…</option>
+                        <option value="">{t("To whom…")}</option>
                         {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                     </select>
                 </div>
@@ -97,20 +99,20 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
                         className={kind === "money" ? "chip active" : "chip"}
                         onClick={() => setKind("money")}
                     >
-                        Money
+                        {t("Money")}
                     </button>
                     <button
                         type="button"
                         className={kind === "text" ? "chip active" : "chip"}
                         onClick={() => setKind("text")}
                     >
-                        Something else
+                        {t("Something else")}
                     </button>
                 </div>
 
                 {kind === "money" ? (
                     <label>
-                        Amount (€)
+                        {t("Amount")} ({currencySymbol()})
                         <input
                             autoFocus
                             type="number"
@@ -123,10 +125,10 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
                     </label>
                 ) : (
                     <label>
-                        What is owed
+                        {t("What is owed")}
                         <input
                             autoFocus
-                            placeholder="e.g. 2 cans of Monster"
+                            placeholder={t("e.g. 2 cans of Monster")}
                             value={what}
                             onChange={(e) => setWhat(e.target.value)}
                         />
@@ -134,10 +136,10 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
                 )}
 
                 <label>
-                    Description (optional)
+                    {t("Description (optional)")}
                     <textarea
                         rows={3}
-                        placeholder="What it was for, details…"
+                        placeholder={t("What it was for, details…")}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
@@ -146,8 +148,8 @@ function DebtModal({ mode, initial, members, onSave, onClose }: Props){
                 {error && <div className="cal_error">{error}</div>}
 
                 <div className="cal_modal_actions">
-                    <button type="button" className="cal_cancel" onClick={onClose}>Cancel</button>
-                    <button type="submit" className="cal_save" disabled={busy}>Save</button>
+                    <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{t("Save")}</button>
                 </div>
             </form>
         </div>

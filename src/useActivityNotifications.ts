@@ -7,6 +7,7 @@ import { auth } from "./firebase";
 import { useAsks } from "./useAsks";
 import { useTasks } from "./useTasks";
 import { loadNotifPrefs } from "./notifPrefs";
+import { t } from "./i18n";
 
 // "since" = the moment this device first ran this feature. Items created before
 // it never notify (otherwise a fresh install would announce everything).
@@ -82,7 +83,7 @@ export function useActivityNotifications() {
             if (known.has(key) || a.createdAt.getTime() <= s.since) continue;
             known.add(key);
             if (a.author.id !== me) {
-                toSend.push({ title: `New ask from ${a.author.name}`, body: a.content });
+                toSend.push({ title: t("New ask from {name}", { name: a.author.name }), body: a.content });
             }
         }
 
@@ -99,7 +100,7 @@ export function useActivityNotifications() {
                 || (t.mode === "each" && t.participants.some((p) => p.id === me));
             if (forMe) {
                 toSend.push({
-                    title: t.mode === "anyone" ? "New task for anyone" : "New task for you",
+                    title: t.mode === "anyone" ? t("New task for anyone") : t("New task for you"),
                     body: t.name,
                 });
             }

@@ -190,3 +190,17 @@
 }
 
 .mobile_gear{ background: none; font-size: 1.5rem; padding: 0.3rem 0.6rem; display: flex; align-items: center; }
+
+/* Ask answers on phones: name, ✓/✗ and Send share the first row,
+   the text box drops below them and spans the whole card. */
+[data-platform="mobile"] .ask_form{ display: contents; }   /* children join the slot's flex row */
+[data-platform="mobile"] .ask_input{ order: 1; flex: 1 1 100%; }  /* order:1 puts it after Send; 100% basis forces its own line */
+[data-platform="mobile"] .calendar_container,
+[data-platform="mobile"] .tasks_container,
+[data-platform="mobile"] .asks_container,
+[data-platform="mobile"] .groc_container,      /* <- add */
+[data-platform="mobile"] .debts_container,
+[data-platform="mobile"] .rules_container,
+[data-platform="mobile"] .settings_container{
+    padding: 0.8rem;
+}
