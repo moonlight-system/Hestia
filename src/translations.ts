@@ -151,5 +151,6 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
         "For everyone": "Pour tout le monde", "Everyone": "Tout le monde", "For": "Pour",
         "Edit item": "Modifier l'article", "Item name": "Nom de l'article",
         "Tick what we're out of. Untick it once bought. Right-click (or long-press) an item to edit or delete it.": "Cochez ce qui est épuisé, décochez une fois acheté. Clic droit (ou appui long) sur un article pour le modifier ou le supprimer.",
+        "Not needed": "Pas besoin", "Needed": "À acheter",
     },
 };

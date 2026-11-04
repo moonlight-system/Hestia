@@ -89,3 +89,55 @@
     padding: 0 0.5rem;
     font: inherit;
 }
+
+/* Not needed / needed labels around the switch */
+.groc_state{
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    flex: none;
+}
+/* invisible bold copy that reserves the wider width */
+.groc_state::after{
+    content: attr(data-text);
+    font-weight: 700;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+.groc_state.on{ color: var(--text-color); font-weight: 700; }
+
+/* Toggle switch (a styled checkbox) */
+.groc_row input.groc_switch{
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex: none;
+    width: 2.4rem;
+    height: 1.3rem;
+    margin: 0;
+    border-radius: 5px;
+    background-color: var(--base-bg-color);
+    outline: 1px solid var(--muted-color);
+    outline-offset: -1px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.groc_row input.groc_switch::after{
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    left: 0.2rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 3px;
+    background-color: var(--muted-color);
+    transition: transform 0.2s, background-color 0.2s;
+}
+.groc_row input.groc_switch:checked{ background-color: var(--main-accent-color); outline-color: var(--main-accent-color); }
+.groc_row input.groc_switch:checked::after{
+    transform: translateX(1.1rem);
+    background-color: var(--on-accent-color);
+}

@@ -132,12 +132,26 @@ const DARK_THEMES: ThemePreset[] = [
         bg: ["#0f2a33", "#0b2028", "#07161c"], text: "#e0f2f1",
     }),
     theme("Amber", {
-        accent: "#ffcc4d", secondary: "#ffa726",
-        bg: ["#17120b", "#110d08", "#0b0805"], text: "#cf9b3e",
+        accent: "#ffa94d", accentText: "#ffb84d", onAccent: "#2a1507",
+        title: "#ffc766", secondary: "#ff9248",
+        bg: ["#331a10", "#27130a", "#1c0d06"], text: "#ecd5b0",
+        today: "#e8741f",
     }),
     theme("Black Pink", {
         accent: "#f038e7", accentText: "#f65aee", secondary: "#ffffff",
         bg: ["#382e35", "#281b23", "#180612"], text: "#f5dede",
+    }),
+    theme("Nord", {
+        accent: "#88c0d0", title: "#8fbcbb", secondary: "#a3be8c",
+        bg: ["#2e3440", "#262b35", "#1d2129"], text: "#e5e9f0",
+    }),
+    theme("Sakura Night", {
+        accent: "#f4a6c0", title: "#ffc2d6", secondary: "#b8e0d2",
+        bg: ["#2a2030", "#211828", "#181020"], text: "#f5e6ee",
+    }),
+    theme("Count", {
+        accent: "#bd93f9", title: "#ff79c6", secondary: "#50fa7b",
+        bg: ["#282a36", "#21222c", "#191a21"], text: "#f8f8f2",
     }),
 ];
 
@@ -149,10 +163,6 @@ const LIGHT_THEMES: ThemePreset[] = [
     theme("Latte", {
         accent: "#a55c2e", accentText: "#8f4a1f", secondary: "#7d5200",
         bg: ["#efe3d0", "#e1d0b8", "#d2bd9f"], text: "#3b2a20",
-    }),
-    theme("Mango", {
-        accent: "#c9341c", accentText: "#a3260f", secondary: "#a63f00",
-        bg: ["#fff1d6", "#ffe0b0", "#ffcb91"], text: "#3d1f14",
     }),
     theme("Trans rights !!", {
         accent: "#cf1b6e", accentText: "#b8155f", secondary: "#136a92",
@@ -171,8 +181,16 @@ const LIGHT_THEMES: ThemePreset[] = [
         bg: ["#fdf3d8", "#f8e6b8", "#f0d796"], text: "#5c3d0a",
     }),
     theme("Rose Garden", {
-        accent: "#c2406a", accentText: "#b0345c", title: "#2f5a3e", secondary: "#35704a",
+        accent: "#c2406a", accentText: "#b0345c", title: "#6dc76b", secondary: "#52c520",
         bg: ["#f8ecec", "#f0dcdc", "#e6c9cb"], text: "#3b2530",
+    }),
+    theme("Mango", {
+        accent: "#e8704a", accentText: "#bf4a26", secondary: "#a8561f",
+        bg: ["#fff0e8", "#fde0d0", "#f8cdb8"], text: "#4a2a20",
+    }),
+    theme("Mint", {
+        accent: "#1f9d7a", accentText: "#147a5e", secondary: "#1d6f8a",
+        bg: ["#eaf7f1", "#d5ede3", "#bfe0d1"], text: "#1c3a30",
     }),
 ];
 

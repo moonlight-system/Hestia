@@ -34,9 +34,7 @@ function Groceries(){
     const itemCol = collection(db, "households", hid, "groceryItems");
     const nameOf = (p: Person) => members.find((m) => m.id === p.id)?.name ?? p.name;
 
-    // Things we're out of first, then alphabetical
-    const sortedStaples = [...staples].sort((a, b) =>
-        Number(b.needed) - Number(a.needed) || a.name.localeCompare(b.name, locale()));
+    const sortedStaples = [...staples].sort((a, b) => a.name.localeCompare(b.name, locale()));
     const sortedItems = [...items].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     const neededCount = staples.filter((s) => s.needed).length;
 
@@ -139,8 +137,20 @@ function Groceries(){
                                 setMenu({ x: e.clientX, y: e.clientY, kind: "staple", id: s.id, name: s.name, forId: s.forId });
                             }}
                         >
-                            <input type="checkbox" checked={s.needed} onChange={() => toggleStaple(s)} />
                             <span className="groc_name">{s.name}</span>
+                            <span className={s.needed ? "groc_state" : "groc_state on"} data-text={t("Not needed")}>
+                                {t("Not needed")}
+                            </span>
+                            <input
+                                type="checkbox"
+                                role="switch"
+                                className="groc_switch"
+                                checked={s.needed}
+                                onChange={() => toggleStaple(s)}
+                            />
+                            <span className={s.needed ? "groc_state on" : "groc_state"} data-text={t("Needed")}>
+                                {t("Needed")}
+                            </span>
                         </label>
                     ))}
                 </Fragment>
