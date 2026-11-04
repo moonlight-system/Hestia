@@ -17,6 +17,7 @@ export function useGroceries(): { staples: GroceryStaple[]; items: GroceryItem[]
                 return {
                     id: d.id,
                     name: data.name,
+                    forId: data.forId,
                     needed: !!data.needed,
                     createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
                 };
@@ -33,6 +34,7 @@ export function useGroceries(): { staples: GroceryStaple[]; items: GroceryItem[]
                 return {
                     id: d.id,
                     name: data.name,
+                    forId: data.forId,
                     addedBy: data.addedBy,
                     createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0),
                 };

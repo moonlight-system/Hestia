@@ -233,14 +233,14 @@ function Debts(){
                         {simple.length === 0 && (
                             <div className="debts_empty">{t("Everything cancels out. All square!")}</div>
                         )}
-                        {simple.map((t) => (
-                            <div className="debt_card" key={t.from.id + t.to.id}>
+                        {simple.map((tr) => (
+                            <div className="debt_card" key={tr.from.id + tr.to.id}>
                                 <div className="debt_names">
-                                    <span>{nameOf(t.from)}</span>
+                                    <span>{nameOf(tr.from)}</span>
                                     <span className="debt_owes">{t("owes")}</span>
-                                    <span>{nameOf(t.to)}</span>
+                                    <span>{nameOf(tr.to)}</span>
                                 </div>
-                                <div className="debt_amount">{formatMoney(t.cents)}</div>
+                                <div className="debt_amount">{formatMoney(tr.cents)}</div>
                             </div>
                         ))}
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Person, Repeat, TaskMode } from "../Types";
 import { REMIND_OPTIONS, toDateInput } from "../taskUtils";
-import { locale, t } from "../i18n";
+import { t } from "../i18n";
 
 export type TaskData = {
     name: string;

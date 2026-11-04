@@ -1,6 +1,7 @@
 import "./Groceries.css";
 import { Fragment, useState, type FormEvent } from "react";
-import { addDoc, collection, deleteDoc, doc, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, deleteField, doc, Timestamp, updateDoc } from "firebase/firestore";
+import { GroceryModal, type GroceryData } from "./GroceryModal";
 import { auth, db } from "../firebase";
 import { useHouseholdId } from "../HouseholdContext";
 import { useMembers } from "../useMembers";
@@ -10,7 +11,9 @@ import { isAndroid } from "../platform";
 import { locale, t } from "../i18n";
 import type { GroceryStaple, Person } from "../Types";
 
-type MenuState = { x: number; y: number; staple: GroceryStaple };
+type Kind = "staple" | "item";
+type MenuState = { x: number; y: number; kind: Kind; id: string; name: string; forId?: string };
+type ModalState = { kind: Kind; id: string; initial: GroceryData };
 
 function Groceries(){
     const hid = useHouseholdId();
@@ -22,6 +25,10 @@ function Groceries(){
     const [itemDraft, setItemDraft] = useState("");
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+    const [stapleFor, setStapleFor] = useState(me);   // defaults to me; "" = everyone
+    const [itemFor, setItemFor] = useState(me);
+    const [modal, setModal] = useState<ModalState | null>(null);
 
     const stapleCol = collection(db, "households", hid, "groceryStaples");
     const itemCol = collection(db, "households", hid, "groceryItems");
@@ -39,7 +46,11 @@ function Groceries(){
         if (!name) return;
         setStapleDraft("");
         try {
-            await addDoc(stapleCol, { name, needed: false, createdAt: Timestamp.now() });
+            await addDoc(stapleCol, {
+                name, needed: false, createdAt: Timestamp.now(),
+                // Firestore rejects `undefined`, so only write forId when set
+                ...(stapleFor ? { forId: stapleFor } : {}),
+            });
         } catch (err) { console.error(err); }
     }
 
@@ -60,17 +71,50 @@ function Groceries(){
                 name,
                 addedBy: { id: me, name: myName },
                 createdAt: Timestamp.now(),
+                ...(itemFor ? { forId: itemFor } : {}),
             });
         } catch (err) { console.error(err); }
     }
 
-    async function removeItem(id: string){
+    async function remove(kind: Kind, id: string){
         try {
-            await deleteDoc(doc(itemCol, id));
+            await deleteDoc(doc(kind === "staple" ? stapleCol : itemCol, id));
         } catch (err) { console.error(err); }
     }
 
-    // Left column on desktop: the checkbox list
+    async function saveEdit(data: GroceryData){
+        if (!modal) return;
+        const col = modal.kind === "staple" ? stapleCol : itemCol;
+        // deleteField turns a person back into "everyone"
+        await updateDoc(doc(col, modal.id), { name: data.name, forId: data.forId ?? deleteField() });
+        setModal(null);
+    }
+
+    // Splits a list into groups: me first, then everyone, then the other roommates.
+    // An item for someone who left the household falls back to "everyone".
+    // Empty groups are dropped. The order inside each group is kept.
+    function group<T extends { forId?: string }>(list: T[]) {
+        const known = new Set(members.map((m) => m.id));
+        const target = (x: T) => (x.forId && known.has(x.forId) ? x.forId : "");
+        const ids = [me, "", ...members.filter((m) => m.id !== me).map((m) => m.id)];
+        return ids
+            .map((id) => ({
+                id,
+                title: id === me ? t("Mine")
+                    : id === "" ? t("For everyone")
+                    : members.find((m) => m.id === id)?.name ?? "",
+                list: list.filter((x) => target(x) === id),
+            }))
+            .filter((g) => g.list.length > 0);
+    }
+
+    const personSelect = (value: string, onChange: (v: string) => void) => (
+        <select value={value} onChange={(e) => onChange(e.target.value)}>
+            <option value="">{t("Everyone")}</option>
+            {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+        </select>
+    );
+
     const staplesBody = (
         <>
             <form className="groc_add" onSubmit={addStaple}>
@@ -79,29 +123,34 @@ function Groceries(){
                     value={stapleDraft}
                     onChange={(e) => setStapleDraft(e.target.value)}
                 />
+                {personSelect(stapleFor, setStapleFor)}
                 <button type="submit">{t("Add")}</button>
             </form>
             {sortedStaples.length === 0 && <div className="groc_empty">{t("Nothing here yet.")}</div>}
-            {sortedStaples.map((s) => (
-                <label
-                    key={s.id}
-                    className={s.needed ? "groc_row needed" : "groc_row"}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        setMenu({ x: e.clientX, y: e.clientY, staple: s });
-                    }}
-                >
-                    <input type="checkbox" checked={s.needed} onChange={() => toggleStaple(s)} />
-                    <span className="groc_name">{s.name}</span>
-                </label>
+            {group(sortedStaples).map((g) => (
+                <Fragment key={g.id}>
+                    <div className="groc_group">{g.title}</div>
+                    {g.list.map((s) => (
+                        <label
+                            key={s.id}
+                            className={s.needed ? "groc_row needed" : "groc_row"}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                setMenu({ x: e.clientX, y: e.clientY, kind: "staple", id: s.id, name: s.name, forId: s.forId });
+                            }}
+                        >
+                            <input type="checkbox" checked={s.needed} onChange={() => toggleStaple(s)} />
+                            <span className="groc_name">{s.name}</span>
+                        </label>
+                    ))}
+                </Fragment>
             ))}
             <div className="groc_hint">
-                {t("Tick what we're out of. Untick it once bought. Right-click (or long-press) an item to delete it.")}
+                {t("Tick what we're out of. Untick it once bought. Right-click (or long-press) an item to edit or delete it.")}
             </div>
         </>
     );
 
-    // Right column on desktop: the free-text list
     const itemsBody = (
         <>
             <form className="groc_add" onSubmit={addItem}>
@@ -110,15 +159,28 @@ function Groceries(){
                     value={itemDraft}
                     onChange={(e) => setItemDraft(e.target.value)}
                 />
+                {personSelect(itemFor, setItemFor)}
                 <button type="submit">{t("Add")}</button>
             </form>
             {sortedItems.length === 0 && <div className="groc_empty">{t("Nothing here yet.")}</div>}
-            {sortedItems.map((i) => (
-                <div key={i.id} className="groc_row">
-                    <span className="groc_name">{i.name}</span>
-                    <span className="groc_by">{nameOf(i.addedBy)}</span>
-                    <button className="groc_remove" title={t("Remove")} onClick={() => removeItem(i.id)}>✕</button>
-                </div>
+            {group(sortedItems).map((g) => (
+                <Fragment key={g.id}>
+                    <div className="groc_group">{g.title}</div>
+                    {g.list.map((i) => (
+                        <div
+                            key={i.id}
+                            className="groc_row"
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                setMenu({ x: e.clientX, y: e.clientY, kind: "item", id: i.id, name: i.name, forId: i.forId });
+                            }}
+                        >
+                            <span className="groc_name">{i.name}</span>
+                            <span className="groc_by">{nameOf(i.addedBy)}</span>
+                            <button className="groc_remove" title={t("Remove")} onClick={() => remove("item", i.id)}>✕</button>
+                        </div>
+                    ))}
+                </Fragment>
             ))}
         </>
     );
@@ -161,7 +223,17 @@ function Groceries(){
                     x={menu.x}
                     y={menu.y}
                     onClose={() => setMenu(null)}
-                    onDelete={() => deleteDoc(doc(stapleCol, menu.staple.id)).catch(console.error)}
+                    onEdit={() => setModal({ kind: menu.kind, id: menu.id, initial: { name: menu.name, forId: menu.forId } })}
+                    onDelete={() => remove(menu.kind, menu.id)}
+                />
+            )}
+
+            {modal && (
+                <GroceryModal
+                    initial={modal.initial}
+                    members={members}
+                    onSave={saveEdit}
+                    onClose={() => setModal(null)}
                 />
             )}
         </div>

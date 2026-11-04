@@ -1,6 +1,6 @@
 import { EDITABLE_COLORS, THEME_PRESETS, resolveColor, type ThemePreset } from "../themes";
 import { Dropdown } from "./Dropdown";
-import { locale, t } from "../i18n";
+import { t } from "../i18n";
 
 type Props = { value: string; onChange: (name: string) => void };
 

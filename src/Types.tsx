@@ -85,6 +85,7 @@ export type GroceryStaple = {
     name: string;
     needed: boolean;          // ticked = "we're out of it, buy more"
     createdAt: Date;
+    forId?: string;
 };
 
 export type GroceryItem = {
@@ -92,4 +93,5 @@ export type GroceryItem = {
     name: string;
     addedBy: Person;
     createdAt: Date;
+    forId?: string;
 };

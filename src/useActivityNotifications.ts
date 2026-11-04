@@ -87,21 +87,21 @@ export function useActivityNotifications() {
             }
         }
 
-        for (const t of tasks) {
-            const key = "task:" + t.id;
-            if (known.has(key) || t.createdAt.getTime() <= s.since) continue;
+        for (const task of tasks) {
+            const key = "task:" + task.id;
+            if (known.has(key) || task.createdAt.getTime() <= s.since) continue;
             known.add(key);
             // Tasks without createdBy come from older app versions: never notify
-            if (!t.createdBy || t.createdBy === me) continue;
+            if (!task.createdBy || task.createdBy === me) continue;
 
             const forMe =
-                t.mode === "anyone"
-                || (t.mode === "assigned" && t.assignee?.id === me)
-                || (t.mode === "each" && t.participants.some((p) => p.id === me));
+                task.mode === "anyone"
+                || (task.mode === "assigned" && task.assignee?.id === me)
+                || (task.mode === "each" && task.participants.some((p) => p.id === me));
             if (forMe) {
                 toSend.push({
-                    title: t.mode === "anyone" ? t("New task for anyone") : t("New task for you"),
-                    body: t.name,
+                    title: task.mode === "anyone" ? t("New task for anyone") : t("New task for you"),
+                    body: task.name,
                 });
             }
         }

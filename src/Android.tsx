@@ -1,5 +1,5 @@
 import "./Android.css"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Calendar } from "./Pages/Calendar"
 import { Tasks } from "./Pages/Tasks"
 import { Groceries } from "./Pages/Groceries"
@@ -14,6 +14,7 @@ import { useActivityNotifications } from "./useActivityNotifications"
 import { Settings as SettingsIcon } from "lucide-react"
 import { t } from "./i18n";
 
+
 const TABS = ["Calendar", "Tasks", "Groceries", "Asks", "Debts", "Rules"] as const;
 type Page = typeof TABS[number] | "Settings";
 
@@ -23,13 +24,28 @@ function Android(){
     const update = useAndroidUpdate();
     const [page, setPage] = useState<Page>("Calendar");
 
+    // Each tab change adds a history entry, so the Android back button
+    // returns to the previous tab instead of closing the app.
+    function go(p: Page){
+        if (p === page) return;
+        history.pushState({ page: p }, "");
+        setPage(p);
+    }
+
+    useEffect(() => {
+        history.replaceState({ page: "Calendar" }, "");   // the starting entry
+        const onPop = (e: PopStateEvent) => setPage((e.state?.page as Page) ?? "Calendar");
+        window.addEventListener("popstate", onPop);
+        return () => window.removeEventListener("popstate", onPop);
+    }, []);
+
     return(
         <div className="mobile_container">
             <div className="mobile_header">
                 <div className="mobile_title">Hestia</div>
                 <button
                     className={page === "Settings" ? "mobile_gear active" : "mobile_gear"}
-                    onClick={() => setPage("Settings")}
+                    onClick={() => go("Settings")}
                 >
                     <SettingsIcon size="1em" />
                 </button>
@@ -57,9 +73,9 @@ function Android(){
                     <button
                         key={t2}
                         className={t2 === page ? "mobile_tab active" : "mobile_tab"}
-                        onClick={() => setPage(t2)}
+                        onClick={() => go(t2)}
                     >
-                        {t(tab)}
+                        {t(t2)}
                     </button>
                 ))}
             </div>

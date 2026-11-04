@@ -9,7 +9,7 @@ import { startOfDay } from "./calendarUtils";
 import { DEFAULT_REMIND, NO_REMIND, occurrence, targetCycle } from "./taskUtils";
 import { loadNotifPrefs, NOTIF_EVENT } from "./notifPrefs";
 import type { Task } from "./Types";
-import { locale } from "./i18n";
+import { locale, t } from "./i18n";
 
 const HORIZON_DAYS = 14;   // only schedule this far ahead; refreshed whenever the app opens
 const MAX_PENDING = 50;

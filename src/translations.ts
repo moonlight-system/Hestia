@@ -148,6 +148,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
         "Usual items": "Articles habituels", "Shopping list": "Liste de courses",
         "Add": "Ajouter", "Add a usual item…": "Ajouter un article habituel…", "Add an item…": "Ajouter un article…",
         "Nothing here yet.": "Rien ici pour l'instant.", "Remove": "Retirer",
-        "Tick what we're out of. Untick it once bought. Right-click (or long-press) an item to delete it.": "Cochez ce qui est épuisé, décochez une fois acheté. Clic droit (ou appui long) sur un article pour le supprimer.",
+        "For everyone": "Pour tout le monde", "Everyone": "Tout le monde", "For": "Pour",
+        "Edit item": "Modifier l'article", "Item name": "Nom de l'article",
+        "Tick what we're out of. Untick it once bought. Right-click (or long-press) an item to edit or delete it.": "Cochez ce qui est épuisé, décochez une fois acheté. Clic droit (ou appui long) sur un article pour le modifier ou le supprimer.",
     },
 };

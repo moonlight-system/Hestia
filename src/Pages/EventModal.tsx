@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { EventRepeat, EventUnit, Person } from "../Types";
 import { toInputValue } from "../calendarUtils";
-import { locale } from "../i18n";
+import { t } from "../i18n";
 
 export type EventData = { name: string; start: Date; end?: Date; person: Person[]; repeat?: EventRepeat };
 export type ModalMode = "create" | "edit" | "rename";
