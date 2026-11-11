@@ -6,6 +6,7 @@ import { TRANSLATIONS } from "./translations";
 export const LANGUAGES = [
     { id: "en", label: "English", locale: "en-GB" },   // en-GB = 24h clock, day before month
     { id: "fr", label: "Français", locale: "fr-FR" },
+    { id: "es", label: "Español", locale: "es-ES" },
 ];
 
 // Amounts are stored in cents, so only 2-decimal currencies belong here (no JPY).

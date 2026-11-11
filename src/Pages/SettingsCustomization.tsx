@@ -103,7 +103,7 @@ function SettingsCustomization(){
                     value={prefs.size}
                     onChange={(e) => update({ size: e.target.value })}
                 >
-                    {SIZES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                    {SIZES.map((s) => <option key={s.id} value={s.id}>{t(s.label)}</option>)}
                 </select>
             </div>
 

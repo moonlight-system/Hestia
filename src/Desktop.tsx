@@ -36,11 +36,11 @@ function Desktop(){
                     <div className="nav_update">
                         <div className="nav_update_text">{t("An update is available")}</div>
                         {error ? (
-                            <div className="nav_update_error">Update failed: {error}</div>
+                            <div className="nav_update_error">{t("Update failed:")} {error}</div>
                         ) : (
                             <button className="nav_update_btn" disabled={busy} onClick={install}>
                                 <Download size={16} />
-                                {busy ? "Updating…" : "Update"}
+                                {busy ? t("Updating…") : t("Update")}
                             </button>
                         )}
                     </div>

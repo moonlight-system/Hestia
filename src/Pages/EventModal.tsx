@@ -100,7 +100,7 @@ function EventModal({ mode, initial, members, onSave, onClose }: Props){
 
                 <input
                     autoFocus
-                    placeholder="Event name"
+                    placeholder={t("Event name")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required

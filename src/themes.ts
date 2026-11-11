@@ -141,7 +141,7 @@ const DARK_THEMES: ThemePreset[] = [
         accent: "#f038e7", accentText: "#f65aee", secondary: "#ffffff",
         bg: ["#382e35", "#281b23", "#180612"], text: "#f5dede",
     }),
-    theme("Nord", {
+    theme("Steel", {
         accent: "#88c0d0", title: "#8fbcbb", secondary: "#a3be8c",
         bg: ["#2e3440", "#262b35", "#1d2129"], text: "#e5e9f0",
     }),
