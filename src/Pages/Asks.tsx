@@ -212,7 +212,11 @@ function Asks(){
     }
 
     async function remove(ask: Ask){
-        await deleteDoc(doc(col, ask.id));
+        try {
+            await deleteDoc(doc(col, ask.id));
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     return(

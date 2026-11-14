@@ -282,7 +282,7 @@ function WeekColumns({ date, events, onAdd, onOpenDay, onEventClick, onEventCont
                             <span>{day.toLocaleDateString(locale(), { weekday: "short" })}</span>
                             <strong>{day.getDate()}</strong>
                         </button>
-                        <button className="cal_add" title="Add event" onClick={() => onAdd(day)}>
+                        <button className="cal_add" title={t("Add event")} onClick={() => onAdd(day)}>
                             +
                         </button>
                     </div>

@@ -133,7 +133,11 @@ function Rules(){
     }
 
     async function remove(rule: Rule){
-        await deleteDoc(doc(col, rule.id));
+        try {
+            await deleteDoc(doc(col, rule.id));
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     return(

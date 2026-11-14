@@ -175,7 +175,11 @@ function Debts(){
     }
 
     async function remove(debt: Debt){
-        await deleteDoc(doc(col, debt.id));
+        try {
+            await deleteDoc(doc(col, debt.id));
+        } catch (err){
+            console.error(err);
+        }
     }
 
     const card = (d: Debt) => (

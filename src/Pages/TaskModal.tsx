@@ -67,9 +67,9 @@ function TaskModal({ mode, initial, members, onSave, onClose }: Props){
 
         const n = Math.floor(Number(every));
         if (mode !== "rename") {
-            if (who === "assigned" && !assigneeId) { setError("Pick who is responsible."); return; }
-            if (who === "each" && selected.length === 0) { setError("Pick at least one roommate."); return; }
-            if (repeats && !(n >= 1)) { setError("Repeat interval must be at least 1."); return; }
+            if (who === "assigned" && !assigneeId) { setError(t("Pick who is responsible.")); return; }
+            if (who === "each" && selected.length === 0) { setError(t("Pick at least one roommate.")); return; }
+            if (repeats && !(n >= 1)) { setError(t("Repeat interval must be at least 1.")); return; }
         }
 
         const assignee = members.find((m) => m.id === assigneeId);

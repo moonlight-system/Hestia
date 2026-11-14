@@ -213,7 +213,11 @@ function Tasks(){
     }
 
     async function remove(task: Task){
-        await deleteDoc(doc(col, task.id));
+        try {
+            await deleteDoc(doc(col, task.id));
+        } catch(err){
+            console.error(err);
+        }
     }
 
     const active = tasks

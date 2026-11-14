@@ -64,7 +64,7 @@ function AskModal({ onSave, onClose }: Props){
                     <button
                         type="button"
                         className={text ? "chip active" : "chip"}
-                        onClick={() => setText((t) => !t)}
+                        onClick={() => setText((v) => !v)}
                     >
                         {t("Text")}
                     </button>
@@ -75,7 +75,7 @@ function AskModal({ onSave, onClose }: Props){
 
                 <div className="cal_modal_actions">
                     <button type="button" className="cal_cancel" onClick={onClose}>{t("Cancel")}</button>
-                    <button type="submit" className="cal_save" disabled={busy}>{("Post")}</button>
+                    <button type="submit" className="cal_save" disabled={busy}>{t("Post")}</button>
                 </div>
             </form>
         </div>

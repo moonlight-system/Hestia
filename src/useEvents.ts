@@ -29,8 +29,7 @@ function rangeFor(year: number): [Date, Date] {
     return [addDays(new Date(year, 0, 1), -45), addDays(new Date(year + 1, 0, 1), 45)];
 }
 
-// Loads one calendar year of one-off events, plus ALL repeating events (they can
-// have started years ago), which are expanded into occurrences for that year.
+
 export function useEvents(year: number): Event[] {
     const hid = useHouseholdId();
     const [single, setSingle] = useState<Event[]>([]);
@@ -53,13 +52,14 @@ export function useEvents(year: number): Event[] {
     }, [hid, year]);
 
     useEffect(() => {
+        // "!= null" matches only documents where `repeat` exists and is set
         const q = query(
             collection(db, "households", hid, "events"),
-            where("repeats", "==", true),
+            where("repeat", "!=", null),
         );
         return onSnapshot(
             q,
-            (snap) => setRepeating(snap.docs.map(toEvent)),
+            (snap) => setRepeating(snap.docs.map(toEvent).filter((e) => !!e.repeat)),
             (err) => console.error("Repeating events listener failed:", err),
         );
     }, [hid]);

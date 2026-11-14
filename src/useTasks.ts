@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, updateDoc, runTransaction } from "firebase/firestore";
 import { db } from "./firebase";
 import { useHouseholdId } from "./HouseholdContext";
 import { sameDay, startOfDay } from "./calendarUtils";
@@ -57,7 +57,12 @@ export function useTasks(): { tasks: Task[]; today: Date } {
         for (const t of tasks) {
             const k = targetCycle(t, today);
             if (k !== t.cycle) {
-                updateDoc(doc(col, t.id), { cycle: k, done: [] }).catch(console.error);
+                runTransaction(db, async (tx) => {
+                    const ref = doc(col, t.id);
+                    const snap = await tx.get(ref);
+                    if (snap.data()?.cycle !== t.cycle) return;   // someone already advanced it
+                    tx.update(ref, { cycle: k, done: [] });
+                }).catch(console.error);
             }
         }
 

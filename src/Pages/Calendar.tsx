@@ -159,7 +159,11 @@ function Calendar(){
     }
 
     async function remove(ev: Event){
-        await deleteDoc(doc(db, "households", hid, "events", ev.id));
+        try {
+            await deleteDoc(doc(db, "households", hid, "events", ev.id));
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     async function toggleDone(ev: Event){
